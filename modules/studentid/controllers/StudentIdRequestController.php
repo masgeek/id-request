@@ -67,11 +67,13 @@ class StudentIdRequestController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->request_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
         }
+
+        $this->view->title = 'New student id request';
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -109,7 +111,7 @@ class StudentIdRequestController extends Controller
         return $this->redirect(['index']);
     }
 
-    
+
     /**
      * Finds the StudentIdRequest model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

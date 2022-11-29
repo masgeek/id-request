@@ -6,7 +6,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\studentid\models\StudentIdRequest */
 
-$this->title = 'Create Student Id Request';
 $this->params['breadcrumbs'][] = ['label' => 'Student Id Requests', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
