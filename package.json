@@ -1,0 +1,12 @@
+{
+  "name": "smis",
+  "version": "2.0.0-alpha1",
+  "description": "Student management information system",
+  "main": "web/index.php",
+  "author": "Sammy Barasa",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "jquery": "^3.6.1"
+  }
+}
