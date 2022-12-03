@@ -16,6 +16,8 @@ use yii\web\Response;
  */
 class StudentIdRequestController extends Controller
 {
+//    public $layout = 'domain';
+
     public function behaviors()
     {
         return [
