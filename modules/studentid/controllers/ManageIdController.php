@@ -2,12 +2,13 @@
 
 namespace app\modules\studentid\controllers;
 
-use Yii;
 use app\modules\studentid\models\StudentId;
-use yii\data\ActiveDataProvider;
+use app\modules\studentid\models\StudentIdDetails;
+use app\modules\studentid\models\StudentIdSearch;
+use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * ManageIdController implements the CRUD actions for StudentId model.
@@ -28,15 +29,15 @@ class ManageIdController extends Controller
 
     /**
      * Lists all StudentId models.
-     * @return mixed
+     * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => StudentId::find(),
-        ]);
+        $searchModel = new StudentIdSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -44,9 +45,10 @@ class ManageIdController extends Controller
     /**
      * Displays a single StudentId model.
      * @param integer $id
-     * @return mixed
+     * @return string
+     * @throws NotFoundHttpException
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         $model = $this->findModel($id);
         $providerSmStudentIdDetails = new \yii\data\ArrayDataProvider([
@@ -62,57 +64,49 @@ class ManageIdController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new StudentId model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new StudentId();
 
-        if ($model->loadAll(Yii::$app->request->post()) && $model->saveAll()) {
-            return $this->redirect(['view', 'id' => $model->student_id_serial_no]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
 
     /**
      * Updates an existing StudentId model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
-     * @return mixed
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $model = $this->findModel($id);
 
-        if ($model->loadAll(Yii::$app->request->post()) && $model->saveAll()) {
-            return $this->redirect(['view', 'id' => $model->student_id_serial_no]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post('StudentId');
+            $remarks = $post['id_remarks'];
+            $status = $post['id_status'];
+
+            $model->id_remarks = $remarks;
+            $model->id_status = $status;
+
+            if ($model->save()) {
+                //add details to student id details
+                $studentIdDetails = new StudentIdDetails();
+                $studentIdDetails->student_id_serial_no = $model->student_id_serial_no;
+                $studentIdDetails->student_id_status = $model->id_status;
+                $studentIdDetails->remarks = $remarks;
+                $studentIdDetails->status_date = date('Y-m-d');
+
+                $studentIdDetails->save();
+
+                Yii::$app->session->setFlash('success', 'ID status successfully updated to ' . $model->id_status);
+
+                return $this->redirect(['index']);
+            }
         }
+        return $this->render('lost-id', [
+            'model' => $model,
+        ]);
+
     }
 
-    /**
-     * Deletes an existing StudentId model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->deleteWithRelated();
 
-        return $this->redirect(['index']);
-    }
-
-    
     /**
      * Finds the StudentId model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -120,58 +114,11 @@ class ManageIdController extends Controller
      * @return StudentId the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): StudentId
     {
         if (($model = StudentId::findOne($id)) !== null) {
             return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-    
-    /**
-    * Action to load a tabular form grid
-    * for SmStudentIdDetails
-    * @author Yohanes Candrajaya <moo.tensai@gmail.com>
-    * @author Jiwantoro Ndaru <jiwanndaru@gmail.com>
-    *
-    * @return mixed
-    */
-    public function actionAddSmStudentIdDetails()
-    {
-        if (Yii::$app->request->isAjax) {
-            $row = Yii::$app->request->post('SmStudentIdDetails');
-            if (!empty($row)) {
-                $row = array_values($row);
-            }
-            if((Yii::$app->request->post('isNewRecord') && Yii::$app->request->post('_action') == 'load' && empty($row)) || Yii::$app->request->post('_action') == 'add')
-                $row[] = [];
-            return $this->renderAjax('_formSmStudentIdDetails', ['row' => $row]);
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
-    
-    /**
-    * Action to load a tabular form grid
-    * for SmStudentIdStatus
-    * @author Yohanes Candrajaya <moo.tensai@gmail.com>
-    * @author Jiwantoro Ndaru <jiwanndaru@gmail.com>
-    *
-    * @return mixed
-    */
-    public function actionAddSmStudentIdStatus()
-    {
-        if (Yii::$app->request->isAjax) {
-            $row = Yii::$app->request->post('SmStudentIdStatus');
-            if (!empty($row)) {
-                $row = array_values($row);
-            }
-            if((Yii::$app->request->post('isNewRecord') && Yii::$app->request->post('_action') == 'load' && empty($row)) || Yii::$app->request->post('_action') == 'add')
-                $row[] = [];
-            return $this->renderAjax('_formSmStudentIdStatus', ['row' => $row]);
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
+        throw new NotFoundHttpException('The requested record does not exist.');
     }
 }

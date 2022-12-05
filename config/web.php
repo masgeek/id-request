@@ -56,7 +56,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '<module>/<controller>/<action:(update|delete|view)>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module>/<controller>/<action:(update|delete|view|report-lost-id)>/<id:\d+>' => '<module>/<controller>/<action>',
             ],
         ],
 

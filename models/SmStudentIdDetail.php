@@ -31,8 +31,9 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
-            [['stud_id_det_id', 'student_id_serial_no'], 'default', 'value' => null],
+//            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
+            [['student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
+            [['student_id_serial_no'], 'default', 'value' => null],
             [['stud_id_det_id', 'student_id_serial_no'], 'integer'],
             [['student_id_status', 'remarks'], 'string'],
             [['status_date'], 'safe'],
