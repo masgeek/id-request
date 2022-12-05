@@ -5,17 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_sm_student_fee_structure".
+ * This is the base model class for table "smis.sm_sm_student_fee_structure".
  *
- * @property int $student_fee_structure_id
- * @property int $student_prog_curr_id
- * @property int $fee_structure_type_id
- * @property string|null $effective_date
+ * @property integer $student_fee_structure_id
+ * @property integer $student_prog_curr_id
+ * @property integer $fee_structure_type_id
+ * @property string $effective_date
+ *
+ * @property \app\models\FsFeesStructureType $feeStructureType
+ * @property \app\models\SmStudentProgrammeCurriculum $studentProgCurr
  */
 class SmSmStudentFeeStructure extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'feeStructureType',
+            'studentProgCurr'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['student_fee_structure_id', 'student_prog_curr_id', 'fee_structure_type_id'], 'required'],
+            [['student_fee_structure_id', 'student_prog_curr_id', 'fee_structure_type_id'], 'integer'],
+            [['effective_date'], 'safe']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,23 +53,7 @@ class SmSmStudentFeeStructure extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['student_fee_structure_id', 'student_prog_curr_id', 'fee_structure_type_id'], 'required'],
-            [['student_fee_structure_id', 'student_prog_curr_id', 'fee_structure_type_id'], 'default', 'value' => null],
-            [['student_fee_structure_id', 'student_prog_curr_id', 'fee_structure_type_id'], 'integer'],
-            [['effective_date'], 'safe'],
-            [['student_fee_structure_id'], 'unique'],
-            [['fee_structure_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => FsFeesStructureType::class, 'targetAttribute' => ['fee_structure_type_id' => 'fee_structure_type_id']],
-            [['student_prog_curr_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentProgrammeCurriculum::class, 'targetAttribute' => ['student_prog_curr_id' => 'student_prog_curriculum_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -50,4 +64,20 @@ class SmSmStudentFeeStructure extends \yii\db\ActiveRecord
             'effective_date' => 'Effective Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFeeStructureType()
+    {
+        return $this->hasOne(\app\models\FsFeesStructureType::className(), ['fee_structure_type_id' => 'fee_structure_type_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentProgCurr()
+    {
+        return $this->hasOne(\app\models\SmStudentProgrammeCurriculum::className(), ['student_prog_curriculum_id' => 'student_prog_curr_id']);
+    }
+    }

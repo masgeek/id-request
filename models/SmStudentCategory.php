@@ -5,15 +5,45 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_category".
+ * This is the base model class for table "smis.sm_student_category".
  *
- * @property int $std_category_id
+ * @property integer $std_category_id
  * @property string $std_category_name
+ *
+ * @property \app\models\SmRegRequiredDocument[] $smRegRequiredDocuments
+ * @property \app\models\SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
  */
 class SmStudentCategory extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smRegRequiredDocuments',
+            'smStudentProgrammeCurriculums'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['std_category_id', 'std_category_name'], 'required'],
+            [['std_category_id'], 'integer'],
+            [['std_category_name'], 'string', 'max' => 100]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,21 +51,7 @@ class SmStudentCategory extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['std_category_id', 'std_category_name'], 'required'],
-            [['std_category_id'], 'default', 'value' => null],
-            [['std_category_id'], 'integer'],
-            [['std_category_name'], 'string', 'max' => 100],
-            [['std_category_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +60,20 @@ class SmStudentCategory extends \yii\db\ActiveRecord
             'std_category_name' => 'Std Category Name',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmRegRequiredDocuments()
+    {
+        return $this->hasMany(\app\models\SmRegRequiredDocument::className(), ['fk_category_id' => 'std_category_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\SmStudentProgrammeCurriculum::className(), ['student_category_id' => 'std_category_id']);
+    }
+    }

@@ -5,21 +5,54 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_stud_submitted_document".
+ * This is the base model class for table "smis.sm_stud_submitted_document".
  *
- * @property int $student_document_id
- * @property int $required_document_id
+ * @property integer $student_document_id
+ * @property integer $required_document_id
  * @property string $document_path
- * @property string|null $ip_address
+ * @property string $ip_address
  * @property string $upload_date
  * @property string $verify_status
- * @property string|null $doc_comments
- * @property int $adm_refno
+ * @property string $doc_comments
+ * @property integer $adm_refno
+ *
+ * @property \app\models\SmAdmittedStudent $admRefno
+ * @property \app\models\SmRegRequiredDocument $requiredDocument
  */
 class SmStudSubmittedDocument extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'admRefno',
+            'requiredDocument'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['required_document_id', 'document_path', 'upload_date', 'verify_status', 'adm_refno'], 'required'],
+            [['required_document_id', 'adm_refno'], 'integer'],
+            [['upload_date'], 'safe'],
+            [['document_path', 'doc_comments'], 'string', 'max' => 100],
+            [['ip_address'], 'string', 'max' => 60],
+            [['verify_status'], 'string', 'max' => 20]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -27,25 +60,7 @@ class SmStudSubmittedDocument extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['required_document_id', 'document_path', 'upload_date', 'verify_status', 'adm_refno'], 'required'],
-            [['required_document_id', 'adm_refno'], 'default', 'value' => null],
-            [['required_document_id', 'adm_refno'], 'integer'],
-            [['upload_date'], 'safe'],
-            [['document_path', 'doc_comments'], 'string', 'max' => 100],
-            [['ip_address'], 'string', 'max' => 60],
-            [['verify_status'], 'string', 'max' => 20],
-            [['adm_refno'], 'exist', 'skipOnError' => true, 'targetClass' => SmAdmittedStudent::class, 'targetAttribute' => ['adm_refno' => 'adm_refno']],
-            [['required_document_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmRegRequiredDocument::class, 'targetAttribute' => ['required_document_id' => 'required_document_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -60,4 +75,20 @@ class SmStudSubmittedDocument extends \yii\db\ActiveRecord
             'adm_refno' => 'Adm Refno',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdmRefno()
+    {
+        return $this->hasOne(\app\models\SmAdmittedStudent::className(), ['adm_refno' => 'adm_refno']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRequiredDocument()
+    {
+        return $this->hasOne(\app\models\SmRegRequiredDocument::className(), ['required_document_id' => 'required_document_id']);
+    }
+    }

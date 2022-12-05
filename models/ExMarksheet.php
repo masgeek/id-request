@@ -5,18 +5,46 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.ex_marksheet".
+ * This is the base model class for table "smis.ex_marksheet".
  *
- * @property int $marksheet_id
- * @property int $student_course_reg_id
- * @property float|null $course_work_mark
- * @property float|null $exam_mark
- * @property int|null $final_mark
+ * @property integer $marksheet_id
+ * @property integer $student_course_reg_id
+ * @property double $course_work_mark
+ * @property double $exam_mark
+ * @property integer $final_mark
+ *
+ * @property \app\models\CrCourseRegistration $studentCourseReg
  */
 class ExMarksheet extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'studentCourseReg'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['marksheet_id', 'student_course_reg_id'], 'required'],
+            [['marksheet_id', 'student_course_reg_id', 'final_mark'], 'integer'],
+            [['course_work_mark', 'exam_mark'], 'number']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,22 +52,7 @@ class ExMarksheet extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['marksheet_id', 'student_course_reg_id'], 'required'],
-            [['marksheet_id', 'student_course_reg_id', 'final_mark'], 'default', 'value' => null],
-            [['marksheet_id', 'student_course_reg_id', 'final_mark'], 'integer'],
-            [['course_work_mark', 'exam_mark'], 'number'],
-            [['marksheet_id'], 'unique'],
-            [['student_course_reg_id'], 'exist', 'skipOnError' => true, 'targetClass' => CrCourseRegistration::class, 'targetAttribute' => ['student_course_reg_id' => 'student_course_reg_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -51,4 +64,12 @@ class ExMarksheet extends \yii\db\ActiveRecord
             'final_mark' => 'Final Mark',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentCourseReg()
+    {
+        return $this->hasOne(\app\models\CrCourseRegistration::className(), ['student_course_reg_id' => 'student_course_reg_id']);
+    }
+    }

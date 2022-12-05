@@ -5,16 +5,45 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_status".
+ * This is the base model class for table "smis.sm_student_status".
  *
- * @property int $status_id
+ * @property integer $status_id
  * @property string $status
- * @property bool $current_status
+ * @property boolean $current_status
+ *
+ * @property \app\models\SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
  */
 class SmStudentStatus extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smStudentProgrammeCurriculums'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['status_id', 'status', 'current_status'], 'required'],
+            [['status_id'], 'integer'],
+            [['current_status'], 'boolean'],
+            [['status'], 'string', 'max' => 12]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,22 +51,7 @@ class SmStudentStatus extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['status_id', 'status', 'current_status'], 'required'],
-            [['status_id'], 'default', 'value' => null],
-            [['status_id'], 'integer'],
-            [['current_status'], 'boolean'],
-            [['status'], 'string', 'max' => 12],
-            [['status_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -47,4 +61,12 @@ class SmStudentStatus extends \yii\db\ActiveRecord
             'current_status' => 'Current Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\SmStudentProgrammeCurriculum::className(), ['status_id' => 'status_id']);
+    }
+    }

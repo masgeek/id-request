@@ -5,20 +5,48 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.cr_programme_curr_lecture_timetable".
+ * This is the base model class for table "smis.cr_programme_curr_lecture_timetable".
  *
- * @property int $lecture_timetable_id
- * @property int $timetable_id
- * @property int|null $lecture_room_id
- * @property int|null $day_id
- * @property string|null $start_time
- * @property string|null $end_time
- * @property int|null $class_code
+ * @property integer $lecture_timetable_id
+ * @property integer $timetable_id
+ * @property integer $lecture_room_id
+ * @property integer $day_id
+ * @property string $start_time
+ * @property string $end_time
+ * @property integer $class_code
+ *
+ * @property \app\models\CrProgCurrTimetable $timetable
  */
 class CrProgrammeCurrLectureTimetable extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'timetable'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['timetable_id'], 'required'],
+            [['timetable_id', 'lecture_room_id', 'day_id', 'class_code'], 'integer'],
+            [['start_time', 'end_time'], 'safe']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -26,21 +54,7 @@ class CrProgrammeCurrLectureTimetable extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['timetable_id'], 'required'],
-            [['timetable_id', 'lecture_room_id', 'day_id', 'class_code'], 'default', 'value' => null],
-            [['timetable_id', 'lecture_room_id', 'day_id', 'class_code'], 'integer'],
-            [['start_time', 'end_time'], 'safe'],
-            [['timetable_id'], 'exist', 'skipOnError' => true, 'targetClass' => CrProgCurrTimetable::class, 'targetAttribute' => ['timetable_id' => 'timetable_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -54,4 +68,12 @@ class CrProgrammeCurrLectureTimetable extends \yii\db\ActiveRecord
             'class_code' => 'Class Code',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTimetable()
+    {
+        return $this->hasOne(\app\models\CrProgCurrTimetable::className(), ['timetable_id' => 'timetable_id']);
+    }
+    }

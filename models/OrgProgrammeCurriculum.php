@@ -5,29 +5,74 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_programme_curriculum".
+ * This is the base model class for table "smis.org_programme_curriculum".
  *
- * @property int $prog_curriculum_id
- * @property int $prog_id
+ * @property integer $prog_curriculum_id
+ * @property integer $prog_id
  * @property string $prog_curriculum_desc
- * @property int $duration ACADEMIC SESSIONS
- * @property int $pass_mark
- * @property int $annual_semesters
- * @property int|null $max_units_per_semester
- * @property string|null $average_type
- * @property string|null $award_rounding ROUNDOFF, TRUNCATE
+ * @property integer $duration
+ * @property integer $pass_mark
+ * @property integer $annual_semesters
+ * @property integer $max_units_per_semester
+ * @property string $average_type
+ * @property string $award_rounding
  * @property string $start_date
- * @property string|null $end_date
- * @property string $prog_cur_prefix Programme curriculum prefix
+ * @property string $end_date
+ * @property string $prog_cur_prefix
  * @property string $date_created
- * @property int $grading_system_id
+ * @property integer $grading_system_id
  * @property string $status
- * @property string|null $approval_date
+ * @property string $approval_date
+ *
+ * @property \app\models\OrgProgCurrCourse[] $orgProgCurrCourses
+ * @property \app\models\OrgProgCurrOption[] $orgProgCurrOptions
+ * @property \app\models\OrgProgCurrSemester[] $orgProgCurrSemesters
+ * @property \app\models\OrgProgCurrUnit[] $orgProgCurrUnits
+ * @property \app\models\ExGradingSystem $gradingSystem
+ * @property \app\models\OrgProgramme $prog
+ * @property \app\models\SmInterfacultyTransfer[] $smInterfacultyTransfers
+ * @property \app\models\SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
  */
 class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgProgCurrCourses',
+            'orgProgCurrOptions',
+            'orgProgCurrSemesters',
+            'orgProgCurrUnits',
+            'gradingSystem',
+            'prog',
+            'smInterfacultyTransfers',
+            'smStudentProgrammeCurriculums'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_id', 'prog_curriculum_desc', 'duration', 'pass_mark', 'start_date', 'prog_cur_prefix', 'grading_system_id'], 'required'],
+            [['prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'integer'],
+            [['start_date', 'end_date', 'date_created', 'approval_date'], 'safe'],
+            [['prog_curriculum_desc'], 'string', 'max' => 300],
+            [['average_type', 'prog_cur_prefix', 'status'], 'string', 'max' => 10],
+            [['award_rounding'], 'string', 'max' => 20]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -35,25 +80,7 @@ class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_id', 'prog_curriculum_desc', 'duration', 'pass_mark', 'start_date', 'prog_cur_prefix', 'grading_system_id'], 'required'],
-            [['prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'default', 'value' => null],
-            [['prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'integer'],
-            [['start_date', 'end_date', 'date_created', 'approval_date'], 'safe'],
-            [['prog_curriculum_desc'], 'string', 'max' => 300],
-            [['average_type', 'prog_cur_prefix', 'status'], 'string', 'max' => 10],
-            [['award_rounding'], 'string', 'max' => 20],
-            [['grading_system_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExGradingSystem::class, 'targetAttribute' => ['grading_system_id' => 'grading_system_id']],
-            [['prog_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgramme::class, 'targetAttribute' => ['prog_id' => 'prog_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -76,4 +103,68 @@ class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
             'approval_date' => 'Approval Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrCourses()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrCourse::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrOptions()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrOption::className(), ['prog_cur_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrSemesters()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrSemester::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrUnits()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrUnit::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGradingSystem()
+    {
+        return $this->hasOne(\app\models\ExGradingSystem::className(), ['grading_system_id' => 'grading_system_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProg()
+    {
+        return $this->hasOne(\app\models\OrgProgramme::className(), ['prog_id' => 'prog_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmInterfacultyTransfers()
+    {
+        return $this->hasMany(\app\models\SmInterfacultyTransfer::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\SmStudentProgrammeCurriculum::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+    }

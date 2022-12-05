@@ -5,19 +5,53 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.cr_prog_curr_timetable".
+ * This is the base model class for table "smis.cr_prog_curr_timetable".
  *
- * @property int $timetable_id
- * @property int $prog_curriculum_course_id
- * @property int $prog_curriculum_sem_group_id
- * @property string|null $exam_date
- * @property int|null $exam_venue
- * @property int $exam_mode
+ * @property integer $timetable_id
+ * @property integer $prog_curriculum_course_id
+ * @property integer $prog_curriculum_sem_group_id
+ * @property string $exam_date
+ * @property integer $exam_venue
+ * @property integer $exam_mode
+ *
+ * @property \app\models\CrCourseRegistration[] $crCourseRegistrations
+ * @property \app\models\ExMode $examMode
+ * @property \app\models\OrgProgCurrSemesterGroup $progCurriculumSemGroup
+ * @property \app\models\CrProgrammeCurrLectureTimetable[] $crProgrammeCurrLectureTimetables
  */
 class CrProgCurrTimetable extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'crCourseRegistrations',
+            'examMode',
+            'progCurriculumSemGroup',
+            'crProgrammeCurrLectureTimetables'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_curriculum_course_id', 'prog_curriculum_sem_group_id', 'exam_mode'], 'required'],
+            [['prog_curriculum_course_id', 'prog_curriculum_sem_group_id', 'exam_venue', 'exam_mode'], 'integer'],
+            [['exam_date'], 'safe']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,22 +59,7 @@ class CrProgCurrTimetable extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_curriculum_course_id', 'prog_curriculum_sem_group_id', 'exam_mode'], 'required'],
-            [['prog_curriculum_course_id', 'prog_curriculum_sem_group_id', 'exam_venue', 'exam_mode'], 'default', 'value' => null],
-            [['prog_curriculum_course_id', 'prog_curriculum_sem_group_id', 'exam_venue', 'exam_mode'], 'integer'],
-            [['exam_date'], 'safe'],
-            [['exam_mode'], 'exist', 'skipOnError' => true, 'targetClass' => ExMode::class, 'targetAttribute' => ['exam_mode' => 'exam_mode_id']],
-            [['prog_curriculum_sem_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgCurrSemesterGroup::class, 'targetAttribute' => ['prog_curriculum_sem_group_id' => 'prog_curriculum_sem_group_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -53,4 +72,36 @@ class CrProgCurrTimetable extends \yii\db\ActiveRecord
             'exam_mode' => 'Exam Mode',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCrCourseRegistrations()
+    {
+        return $this->hasMany(\app\models\CrCourseRegistration::className(), ['timetable_id' => 'timetable_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getExamMode()
+    {
+        return $this->hasOne(\app\models\ExMode::className(), ['exam_mode_id' => 'exam_mode']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurriculumSemGroup()
+    {
+        return $this->hasOne(\app\models\OrgProgCurrSemesterGroup::className(), ['prog_curriculum_sem_group_id' => 'prog_curriculum_sem_group_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCrProgrammeCurrLectureTimetables()
+    {
+        return $this->hasMany(\app\models\CrProgrammeCurrLectureTimetable::className(), ['timetable_id' => 'timetable_id']);
+    }
+    }

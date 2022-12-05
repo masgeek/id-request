@@ -5,20 +5,50 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.ex_grading_system_detail".
+ * This is the base model class for table "smis.ex_grading_system_detail".
  *
- * @property int $grading_system_detail_id
- * @property int $grading_system_id
- * @property float $lower_bound
- * @property float $upper_bound
+ * @property integer $grading_system_detail_id
+ * @property integer $grading_system_id
+ * @property double $lower_bound
+ * @property double $upper_bound
  * @property string $grade
- * @property float|null $grade_point
+ * @property double $grade_point
  * @property string $is_active
+ *
+ * @property \app\models\ExGradingSystem $gradingSystem
  */
 class ExGradingSystemDetail extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'gradingSystem'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['grading_system_id', 'lower_bound', 'upper_bound', 'grade'], 'required'],
+            [['grading_system_id'], 'integer'],
+            [['lower_bound', 'upper_bound', 'grade_point'], 'number'],
+            [['grade'], 'string', 'max' => 2],
+            [['is_active'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -26,23 +56,7 @@ class ExGradingSystemDetail extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['grading_system_id', 'lower_bound', 'upper_bound', 'grade'], 'required'],
-            [['grading_system_id'], 'default', 'value' => null],
-            [['grading_system_id'], 'integer'],
-            [['lower_bound', 'upper_bound', 'grade_point'], 'number'],
-            [['grade'], 'string', 'max' => 2],
-            [['is_active'], 'string', 'max' => 10],
-            [['grading_system_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExGradingSystem::class, 'targetAttribute' => ['grading_system_id' => 'grading_system_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -56,4 +70,12 @@ class ExGradingSystemDetail extends \yii\db\ActiveRecord
             'is_active' => 'Is Active',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGradingSystem()
+    {
+        return $this->hasOne(\app\models\ExGradingSystem::className(), ['grading_system_id' => 'grading_system_id']);
+    }
+    }

@@ -5,19 +5,52 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.fs_prog_administrative_fee_structure".
+ * This is the base model class for table "smis.fs_prog_administrative_fee_structure".
  *
- * @property int $prog_admin_fee_id
- * @property int $prog_curr_fee_structure_id
- * @property int $billing_frequency_id
- * @property int $admin_fee_id
- * @property float|null $amount
- * @property string|null $status
+ * @property integer $prog_admin_fee_id
+ * @property integer $prog_curr_fee_structure_id
+ * @property integer $billing_frequency_id
+ * @property integer $admin_fee_id
+ * @property string $amount
+ * @property string $status
+ *
+ * @property \app\models\FsAdminFee $adminFee
+ * @property \app\models\FsBillingFrequency $billingFrequency
+ * @property \app\models\FsProgCurrFeesStructure $progCurrFeeStructure
  */
 class FsProgAdministrativeFeeStructure extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'adminFee',
+            'billingFrequency',
+            'progCurrFeeStructure'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_admin_fee_id', 'prog_curr_fee_structure_id', 'billing_frequency_id', 'admin_fee_id'], 'required'],
+            [['prog_admin_fee_id', 'prog_curr_fee_structure_id', 'billing_frequency_id', 'admin_fee_id'], 'integer'],
+            [['amount'], 'number'],
+            [['status'], 'string', 'max' => 30]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,24 +58,7 @@ class FsProgAdministrativeFeeStructure extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_admin_fee_id', 'prog_curr_fee_structure_id', 'billing_frequency_id', 'admin_fee_id'], 'required'],
-            [['prog_admin_fee_id', 'prog_curr_fee_structure_id', 'billing_frequency_id', 'admin_fee_id'], 'default', 'value' => null],
-            [['prog_admin_fee_id', 'prog_curr_fee_structure_id', 'billing_frequency_id', 'admin_fee_id'], 'integer'],
-            [['amount'], 'number'],
-            [['status'], 'string', 'max' => 30],
-            [['admin_fee_id'], 'exist', 'skipOnError' => true, 'targetClass' => FsAdminFee::class, 'targetAttribute' => ['admin_fee_id' => 'admin_fee_id']],
-            [['billing_frequency_id'], 'exist', 'skipOnError' => true, 'targetClass' => FsBillingFrequency::class, 'targetAttribute' => ['billing_frequency_id' => 'billing_frequency_id']],
-            [['prog_curr_fee_structure_id'], 'exist', 'skipOnError' => true, 'targetClass' => FsProgCurrFeesStructure::class, 'targetAttribute' => ['prog_curr_fee_structure_id' => 'prog_curr_fee_structure_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -55,4 +71,28 @@ class FsProgAdministrativeFeeStructure extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdminFee()
+    {
+        return $this->hasOne(\app\models\FsAdminFee::className(), ['admin_fee_id' => 'admin_fee_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBillingFrequency()
+    {
+        return $this->hasOne(\app\models\FsBillingFrequency::className(), ['billing_frequency_id' => 'billing_frequency_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurrFeeStructure()
+    {
+        return $this->hasOne(\app\models\FsProgCurrFeesStructure::className(), ['prog_curr_fee_structure_id' => 'prog_curr_fee_structure_id']);
+    }
+    }

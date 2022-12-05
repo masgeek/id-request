@@ -5,17 +5,45 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_semester_group".
+ * This is the base model class for table "smis.sm_student_semester_group".
  *
- * @property int $student_semester_group_id
- * @property int $prog_curriculum_semester_id
- * @property int $student_semester_session_id
+ * @property integer $student_semester_group_id
+ * @property integer $prog_curriculum_semester_id
+ * @property integer $student_semester_session_id
  * @property string $status
+ *
+ * @property \app\models\OrgProgCurrSemester $progCurriculumSemester
  */
 class SmStudentSemesterGroup extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'progCurriculumSemester'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_curriculum_semester_id', 'student_semester_session_id'], 'required'],
+            [['prog_curriculum_semester_id', 'student_semester_session_id'], 'integer'],
+            [['status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,21 +51,7 @@ class SmStudentSemesterGroup extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_curriculum_semester_id', 'student_semester_session_id'], 'required'],
-            [['prog_curriculum_semester_id', 'student_semester_session_id'], 'default', 'value' => null],
-            [['prog_curriculum_semester_id', 'student_semester_session_id'], 'integer'],
-            [['status'], 'string', 'max' => 10],
-            [['prog_curriculum_semester_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgCurrSemester::class, 'targetAttribute' => ['prog_curriculum_semester_id' => 'prog_curriculum_semester_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -48,4 +62,12 @@ class SmStudentSemesterGroup extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurriculumSemester()
+    {
+        return $this->hasOne(\app\models\OrgProgCurrSemester::className(), ['prog_curriculum_semester_id' => 'prog_curriculum_semester_id']);
+    }
+    }

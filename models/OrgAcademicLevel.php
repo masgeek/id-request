@@ -5,18 +5,49 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_academic_levels".
+ * This is the base model class for table "smis.org_academic_levels".
  *
- * @property int $academic_level_id
- * @property int $academic_level
+ * @property integer $academic_level_id
+ * @property integer $academic_level
  * @property string $academic_level_name
- * @property int|null $academic_level_order
+ * @property integer $academic_level_order
  * @property string $status
+ *
+ * @property \app\models\FsProgCurrFeesStructure[] $fsProgCurrFeesStructures
+ * @property \app\models\SmAcademicProgress[] $smAcademicProgresses
  */
 class OrgAcademicLevel extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'fsProgCurrFeesStructures',
+            'smAcademicProgresses'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['academic_level', 'academic_level_name'], 'required'],
+            [['academic_level', 'academic_level_order'], 'integer'],
+            [['academic_level_name'], 'string', 'max' => 20],
+            [['status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,21 +55,7 @@ class OrgAcademicLevel extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['academic_level', 'academic_level_name'], 'required'],
-            [['academic_level', 'academic_level_order'], 'default', 'value' => null],
-            [['academic_level', 'academic_level_order'], 'integer'],
-            [['academic_level_name'], 'string', 'max' => 20],
-            [['status'], 'string', 'max' => 10],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -50,4 +67,20 @@ class OrgAcademicLevel extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFsProgCurrFeesStructures()
+    {
+        return $this->hasMany(\app\models\FsProgCurrFeesStructure::className(), ['academic_level_id' => 'academic_level_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmAcademicProgresses()
+    {
+        return $this->hasMany(\app\models\SmAcademicProgress::className(), ['academic_level_id' => 'academic_level_id']);
+    }
+    }

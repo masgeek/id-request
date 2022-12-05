@@ -5,15 +5,40 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_room_type".
+ * This is the base model class for table "smis.org_room_type".
  *
- * @property int $room_type_id
+ * @property integer $room_type_id
  * @property string $room_type_name
  */
 class OrgRoomType extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['room_type_name'], 'required'],
+            [['room_type_name'], 'string', 'max' => 80]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,18 +46,7 @@ class OrgRoomType extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['room_type_name'], 'required'],
-            [['room_type_name'], 'string', 'max' => 80],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

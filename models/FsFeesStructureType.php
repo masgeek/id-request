@@ -5,20 +5,55 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.fs_fees_structure_types".
+ * This is the base model class for table "smis.fs_fees_structure_types".
  *
- * @property int $fee_structure_type_id
+ * @property integer $fee_structure_type_id
  * @property string $name
  * @property string $description
  * @property string $currency
  * @property string $status
  * @property string $date_entered
- * @property float|null $exchange_rate
+ * @property double $exchange_rate
+ *
+ * @property \app\models\FsProgCurrFeesStructure[] $fsProgCurrFeesStructures
+ * @property \app\models\SmSmStudentFeeStructure[] $smSmStudentFeeStructures
  */
 class FsFeesStructureType extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'fsProgCurrFeesStructures',
+            'smSmStudentFeeStructures'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['fee_structure_type_id', 'name', 'description', 'currency', 'status', 'date_entered'], 'required'],
+            [['fee_structure_type_id'], 'integer'],
+            [['date_entered'], 'safe'],
+            [['exchange_rate'], 'number'],
+            [['name'], 'string', 'max' => 150],
+            [['description'], 'string', 'max' => 255],
+            [['currency'], 'string', 'max' => 10],
+            [['status'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -26,26 +61,7 @@ class FsFeesStructureType extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['fee_structure_type_id', 'name', 'description', 'currency', 'status', 'date_entered'], 'required'],
-            [['fee_structure_type_id'], 'default', 'value' => null],
-            [['fee_structure_type_id'], 'integer'],
-            [['date_entered'], 'safe'],
-            [['exchange_rate'], 'number'],
-            [['name'], 'string', 'max' => 150],
-            [['description'], 'string', 'max' => 255],
-            [['currency'], 'string', 'max' => 10],
-            [['status'], 'string', 'max' => 15],
-            [['fee_structure_type_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -59,4 +75,20 @@ class FsFeesStructureType extends \yii\db\ActiveRecord
             'exchange_rate' => 'Exchange Rate',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFsProgCurrFeesStructures()
+    {
+        return $this->hasMany(\app\models\FsProgCurrFeesStructure::className(), ['fee_structure_type_id' => 'fee_structure_type_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmSmStudentFeeStructures()
+    {
+        return $this->hasMany(\app\models\SmSmStudentFeeStructure::className(), ['fee_structure_type_id' => 'fee_structure_type_id']);
+    }
+    }

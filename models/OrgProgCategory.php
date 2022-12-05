@@ -5,18 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_prog_category".
+ * This is the base model class for table "smis.org_prog_category".
  *
- * @property int $prog_cat_id
+ * @property integer $prog_cat_id
  * @property string $prog_cat_code
  * @property string $prog_cat_name
- * @property int $prog_cat_order
+ * @property integer $prog_cat_order
  * @property string $status
+ *
+ * @property \app\models\OrgProgramme[] $orgProgrammes
  */
 class OrgProgCategory extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgProgrammes'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_cat_code', 'prog_cat_name'], 'required'],
+            [['prog_cat_order'], 'integer'],
+            [['prog_cat_code', 'status'], 'string', 'max' => 20],
+            [['prog_cat_name'], 'string', 'max' => 150]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,21 +53,7 @@ class OrgProgCategory extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_cat_code', 'prog_cat_name'], 'required'],
-            [['prog_cat_order'], 'default', 'value' => null],
-            [['prog_cat_order'], 'integer'],
-            [['prog_cat_code', 'status'], 'string', 'max' => 20],
-            [['prog_cat_name'], 'string', 'max' => 150],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -50,4 +65,12 @@ class OrgProgCategory extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgrammes()
+    {
+        return $this->hasMany(\app\models\OrgProgramme::className(), ['prog_cat_id' => 'prog_cat_id']);
+    }
+    }

@@ -5,60 +5,73 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_admitted_student".
+ * This is the base model class for table "smis.sm_admitted_student".
  *
- * @property int $adm_refno
- * @property string|null $kcse_index_no
- * @property string|null $kcse_year when uploading make this field mandatory
- * @property string|null $primary_phone_no
- * @property string|null $alternative_phone_no
- * @property string|null $primary_email
- * @property string|null $alternative_email
- * @property string|null $post_code
- * @property string|null $post_address
- * @property string|null $town
- * @property string|null $kuccps_prog_code
+ * @property integer $adm_refno
+ * @property string $kcse_index_no
+ * @property string $kcse_year
+ * @property string $primary_phone_no
+ * @property string $alternative_phone_no
+ * @property string $primary_email
+ * @property string $alternative_email
+ * @property string $post_code
+ * @property string $post_address
+ * @property string $town
+ * @property string $kuccps_prog_code
  * @property string $uon_prog_code
- * @property string|null $national_id
- * @property string|null $birth_cert_no
- * @property int $source_id
- * @property string|null $passport_no
- * @property string $admission_status to take care of a case where an admission is revoked or recalled for the sake of module II default status pre-admission
- * @property int|null $application_refno to link to applicant incase a report of admitted student is required
- * @property int $intake_code
- * @property int $student_category_id
- * @property string|null $password default refno
- * @property bool|null $doc_submission_status
- * @property string|null $primary_email_salt
- * @property string|null $secondary_email_salt
- * @property string|null $primary_email_verified_date
- * @property string|null $secondary_email_verified_date
- * @property string|null $surname
- * @property string|null $other_names
- * @property string|null $primary_phone_country_code
- * @property string|null $alternative_phone_country_code
+ * @property string $national_id
+ * @property string $birth_cert_no
+ * @property integer $source_id
+ * @property string $passport_no
+ * @property string $admission_status
+ * @property integer $application_refno
+ * @property integer $intake_code
+ * @property integer $student_category_id
+ * @property string $password
+ * @property boolean $doc_submission_status
+ * @property string $primary_email_salt
+ * @property string $secondary_email_salt
+ * @property string $primary_email_verified_date
+ * @property string $secondary_email_verified_date
+ * @property string $surname
+ * @property string $other_names
+ * @property string $primary_phone_country_code
+ * @property string $alternative_phone_country_code
  * @property string $gender
- * @property string|null $clearance_status indicates clearance status of a student. PENDING, CLEARED, NOT CLEARED
- * @property string|null $password_changed_date
+ * @property string $clearance_status
+ * @property string $password_changed_date
+ *
+ * @property \app\models\SmIntakeSource $source
+ * @property \app\models\SmIntake $intakeCode
+ * @property \app\models\SmStudSubmittedDocument[] $smStudSubmittedDocuments
+ * @property \app\models\SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
  */
 class SmAdmittedStudent extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'smis.sm_admitted_student';
-    }
+    //use \mootensai\relation\RelationTrait;
+
 
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'source',
+            'intakeCode',
+            'smStudSubmittedDocuments',
+            'smStudentProgrammeCurriculums'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
      */
     public function rules()
     {
         return [
             [['uon_prog_code', 'source_id', 'intake_code', 'student_category_id', 'gender'], 'required'],
-            [['source_id', 'application_refno', 'intake_code', 'student_category_id'], 'default', 'value' => null],
             [['source_id', 'application_refno', 'intake_code', 'student_category_id'], 'integer'],
             [['doc_submission_status'], 'boolean'],
             [['primary_email_verified_date', 'secondary_email_verified_date', 'password_changed_date'], 'safe'],
@@ -69,14 +82,20 @@ class SmAdmittedStudent extends \yii\db\ActiveRecord
             [['admission_status', 'clearance_status'], 'string', 'max' => 30],
             [['primary_email_salt', 'secondary_email_salt'], 'string', 'max' => 255],
             [['other_names'], 'string', 'max' => 150],
-            [['gender'], 'string', 'max' => 1],
-            [['source_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmIntakeSource::class, 'targetAttribute' => ['source_id' => 'source_id']],
-            [['intake_code'], 'exist', 'skipOnError' => true, 'targetClass' => SmIntake::class, 'targetAttribute' => ['intake_code' => 'intake_code']],
+            [['gender'], 'string', 'max' => 1]
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'smis.sm_admitted_student';
+    }
+
+    /**
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -117,4 +136,36 @@ default status pre-admission',
             'password_changed_date' => 'Password Changed Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSource()
+    {
+        return $this->hasOne(\app\models\SmIntakeSource::className(), ['source_id' => 'source_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIntakeCode()
+    {
+        return $this->hasOne(\app\models\SmIntake::className(), ['intake_code' => 'intake_code']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudSubmittedDocuments()
+    {
+        return $this->hasMany(\app\models\SmStudSubmittedDocument::className(), ['adm_refno' => 'adm_refno']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\SmStudentProgrammeCurriculum::className(), ['adm_refno' => 'adm_refno']);
+    }
+    }

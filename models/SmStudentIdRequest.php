@@ -5,19 +5,52 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_id_request".
+ * This is the base model class for table "smis.sm_student_id_request".
  *
- * @property int $request_id
- * @property int $request_type_id
- * @property int $student_prog_curr_id
+ * @property integer $request_id
+ * @property integer $request_type_id
+ * @property integer $student_prog_curr_id
  * @property string $request_date
- * @property int $status_id
+ * @property integer $status_id
  * @property string $source
+ *
+ * @property \app\models\SmIdRequestStatus $status
+ * @property \app\models\SmIdRequestType $requestType
+ * @property \app\models\SmStudentProgrammeCurriculum $studentProgCurr
  */
 class SmStudentIdRequest extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'status',
+            'requestType',
+            'studentProgCurr'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
+            [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'integer'],
+            [['request_date'], 'safe'],
+            [['source'], 'string', 'max' => 30]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,25 +58,7 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
-            [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'default', 'value' => null],
-            [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'integer'],
-            [['request_date'], 'safe'],
-            [['source'], 'string', 'max' => 30],
-            [['request_id'], 'unique'],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmIdRequestStatus::class, 'targetAttribute' => ['status_id' => 'status_id']],
-            [['request_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmIdRequestType::class, 'targetAttribute' => ['request_type_id' => 'request_type_id']],
-            [['student_prog_curr_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentProgrammeCurriculum::class, 'targetAttribute' => ['student_prog_curr_id' => 'student_prog_curriculum_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -56,4 +71,28 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
             'source' => 'Source',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStatus()
+    {
+        return $this->hasOne(\app\models\SmIdRequestStatus::className(), ['status_id' => 'status_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRequestType()
+    {
+        return $this->hasOne(\app\models\SmIdRequestType::className(), ['request_type_id' => 'request_type_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentProgCurr()
+    {
+        return $this->hasOne(\app\models\SmStudentProgrammeCurriculum::className(), ['student_prog_curriculum_id' => 'student_prog_curr_id']);
+    }
+    }

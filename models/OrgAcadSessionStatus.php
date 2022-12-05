@@ -5,16 +5,41 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_acad_session_status".
+ * This is the base model class for table "smis.org_acad_session_status".
  *
- * @property int $acad_session_status_id
+ * @property integer $acad_session_status_id
  * @property string $acad_session_status_name
  * @property string $session_status
  */
 class OrgAcadSessionStatus extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['acad_session_status_name'], 'required'],
+            [['acad_session_status_name', 'session_status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,18 +47,7 @@ class OrgAcadSessionStatus extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['acad_session_status_name'], 'required'],
-            [['acad_session_status_name', 'session_status'], 'string', 'max' => 10],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

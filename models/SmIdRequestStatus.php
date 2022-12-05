@@ -5,15 +5,43 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_id_request_status".
+ * This is the base model class for table "smis.sm_id_request_status".
  *
- * @property int $status_id
+ * @property integer $status_id
  * @property string $status_name
+ *
+ * @property \app\models\SmStudentIdRequest[] $smStudentIdRequests
  */
 class SmIdRequestStatus extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smStudentIdRequests'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['status_id', 'status_name'], 'required'],
+            [['status_id'], 'integer'],
+            [['status_name'], 'string', 'max' => 30]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,21 +49,7 @@ class SmIdRequestStatus extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['status_id', 'status_name'], 'required'],
-            [['status_id'], 'default', 'value' => null],
-            [['status_id'], 'integer'],
-            [['status_name'], 'string', 'max' => 30],
-            [['status_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +58,12 @@ class SmIdRequestStatus extends \yii\db\ActiveRecord
             'status_name' => 'Status Name',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentIdRequests()
+    {
+        return $this->hasMany(\app\models\SmStudentIdRequest::className(), ['status_id' => 'status_id']);
+    }
+    }

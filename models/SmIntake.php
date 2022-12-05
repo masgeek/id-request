@@ -5,16 +5,46 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_intakes".
+ * This is the base model class for table "smis.sm_intakes".
  *
- * @property int $intake_code
+ * @property integer $intake_code
  * @property string $intake_name
- * @property int|null $acad_session_id
+ * @property integer $acad_session_id
+ *
+ * @property \app\models\SmAdmittedStudent[] $smAdmittedStudents
+ * @property \app\models\OrgAcademicSession $acadSession
  */
 class SmIntake extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smAdmittedStudents',
+            'acadSession'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['intake_code', 'intake_name'], 'required'],
+            [['intake_code', 'acad_session_id'], 'integer'],
+            [['intake_name'], 'string']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,22 +52,7 @@ class SmIntake extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['intake_code', 'intake_name'], 'required'],
-            [['intake_code', 'acad_session_id'], 'default', 'value' => null],
-            [['intake_code', 'acad_session_id'], 'integer'],
-            [['intake_name'], 'string'],
-            [['intake_code'], 'unique'],
-            [['acad_session_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgAcademicSession::class, 'targetAttribute' => ['acad_session_id' => 'acad_session_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -47,4 +62,20 @@ class SmIntake extends \yii\db\ActiveRecord
             'acad_session_id' => 'Acad Session ID',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmAdmittedStudents()
+    {
+        return $this->hasMany(\app\models\SmAdmittedStudent::className(), ['intake_code' => 'intake_code']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAcadSession()
+    {
+        return $this->hasOne(\app\models\OrgAcademicSession::className(), ['acad_session_id' => 'acad_session_id']);
+    }
+    }

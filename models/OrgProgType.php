@@ -5,18 +5,48 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_prog_type".
+ * This is the base model class for table "smis.org_prog_type".
  *
- * @property int $prog_type_id
+ * @property integer $prog_type_id
  * @property string $prog_type_code
  * @property string $prog_type_name
- * @property int $prog_type_order
+ * @property integer $prog_type_order
  * @property string $status
+ *
+ * @property \app\models\OrgProgramme[] $orgProgrammes
  */
 class OrgProgType extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgProgrammes'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_type_code', 'prog_type_name', 'prog_type_order'], 'required'],
+            [['prog_type_order'], 'integer'],
+            [['prog_type_code'], 'string', 'max' => 15],
+            [['prog_type_name'], 'string', 'max' => 150],
+            [['status'], 'string', 'max' => 20]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,22 +54,7 @@ class OrgProgType extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_type_code', 'prog_type_name', 'prog_type_order'], 'required'],
-            [['prog_type_order'], 'default', 'value' => null],
-            [['prog_type_order'], 'integer'],
-            [['prog_type_code'], 'string', 'max' => 15],
-            [['prog_type_name'], 'string', 'max' => 150],
-            [['status'], 'string', 'max' => 20],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -51,4 +66,12 @@ class OrgProgType extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgrammes()
+    {
+        return $this->hasMany(\app\models\OrgProgramme::className(), ['prog_type_id' => 'prog_type_id']);
+    }
+    }

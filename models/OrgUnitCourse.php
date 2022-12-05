@@ -5,20 +5,48 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_unit_course".
+ * This is the base model class for table "smis.org_unit_course".
  *
- * @property int $org_unit_course_id
- * @property int $course_id
- * @property int $org_unit_id
- * @property int $org_teaching_id
+ * @property integer $org_unit_course_id
+ * @property integer $course_id
+ * @property integer $org_unit_id
+ * @property integer $org_teaching_id
  * @property string $start_date
- * @property string|null $end_date
- * @property int $user_id
+ * @property string $end_date
+ * @property integer $user_id
+ *
+ * @property \app\models\OrgCourse $course
  */
 class OrgUnitCourse extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'course'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['course_id', 'org_unit_id', 'org_teaching_id', 'start_date', 'user_id'], 'required'],
+            [['course_id', 'org_unit_id', 'org_teaching_id', 'user_id'], 'integer'],
+            [['start_date', 'end_date'], 'safe']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -26,21 +54,7 @@ class OrgUnitCourse extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['course_id', 'org_unit_id', 'org_teaching_id', 'start_date', 'user_id'], 'required'],
-            [['course_id', 'org_unit_id', 'org_teaching_id', 'user_id'], 'default', 'value' => null],
-            [['course_id', 'org_unit_id', 'org_teaching_id', 'user_id'], 'integer'],
-            [['start_date', 'end_date'], 'safe'],
-            [['course_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgCourse::class, 'targetAttribute' => ['course_id' => 'course_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -54,4 +68,12 @@ class OrgUnitCourse extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCourse()
+    {
+        return $this->hasOne(\app\models\OrgCourse::className(), ['course_id' => 'course_id']);
+    }
+    }

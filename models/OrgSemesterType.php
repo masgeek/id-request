@@ -5,15 +5,42 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_semester_type".
+ * This is the base model class for table "smis.org_semester_type".
  *
- * @property int $sem_type_id
+ * @property integer $sem_type_id
  * @property string $sem_type
+ *
+ * @property \app\models\OrgProgCurrSemester[] $orgProgCurrSemesters
  */
 class OrgSemesterType extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgProgCurrSemesters'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['sem_type'], 'required'],
+            [['sem_type'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,18 +48,7 @@ class OrgSemesterType extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['sem_type'], 'required'],
-            [['sem_type'], 'string', 'max' => 15],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -41,4 +57,12 @@ class OrgSemesterType extends \yii\db\ActiveRecord
             'sem_type' => 'Sem Type',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrSemesters()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrSemester::className(), ['semester_type_id' => 'sem_type_id']);
+    }
+    }

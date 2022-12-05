@@ -5,19 +5,52 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.fs_prog_course_fee_structure".
+ * This is the base model class for table "smis.fs_prog_course_fee_structure".
  *
- * @property int $prog_course_fee_structure_id
- * @property int $prog_curr_fee_structure_id
- * @property int $registration_type_id
- * @property float $amount
- * @property int $course_category_id
+ * @property integer $prog_course_fee_structure_id
+ * @property integer $prog_curr_fee_structure_id
+ * @property integer $registration_type_id
+ * @property string $amount
+ * @property integer $course_category_id
  * @property string $status
+ *
+ * @property \app\models\CrCourseCategory $courseCategory
+ * @property \app\models\CrCourseRegType $registrationType
+ * @property \app\models\FsProgCurrFeesStructure $progCurrFeeStructure
  */
 class FsProgCourseFeeStructure extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'courseCategory',
+            'registrationType',
+            'progCurrFeeStructure'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_course_fee_structure_id', 'prog_curr_fee_structure_id', 'registration_type_id', 'amount', 'course_category_id', 'status'], 'required'],
+            [['prog_course_fee_structure_id', 'prog_curr_fee_structure_id', 'registration_type_id', 'course_category_id'], 'integer'],
+            [['amount'], 'number'],
+            [['status'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,25 +58,7 @@ class FsProgCourseFeeStructure extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_course_fee_structure_id', 'prog_curr_fee_structure_id', 'registration_type_id', 'amount', 'course_category_id', 'status'], 'required'],
-            [['prog_course_fee_structure_id', 'prog_curr_fee_structure_id', 'registration_type_id', 'course_category_id'], 'default', 'value' => null],
-            [['prog_course_fee_structure_id', 'prog_curr_fee_structure_id', 'registration_type_id', 'course_category_id'], 'integer'],
-            [['amount'], 'number'],
-            [['status'], 'string', 'max' => 15],
-            [['prog_course_fee_structure_id'], 'unique'],
-            [['course_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => CrCourseCategory::class, 'targetAttribute' => ['course_category_id' => 'category_id']],
-            [['registration_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => CrCourseRegType::class, 'targetAttribute' => ['registration_type_id' => 'course_reg_type_id']],
-            [['prog_curr_fee_structure_id'], 'exist', 'skipOnError' => true, 'targetClass' => FsProgCurrFeesStructure::class, 'targetAttribute' => ['prog_curr_fee_structure_id' => 'prog_curr_fee_structure_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -56,4 +71,28 @@ class FsProgCourseFeeStructure extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCourseCategory()
+    {
+        return $this->hasOne(\app\models\CrCourseCategory::className(), ['category_id' => 'course_category_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRegistrationType()
+    {
+        return $this->hasOne(\app\models\CrCourseRegType::className(), ['course_reg_type_id' => 'registration_type_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurrFeeStructure()
+    {
+        return $this->hasOne(\app\models\FsProgCurrFeesStructure::className(), ['prog_curr_fee_structure_id' => 'prog_curr_fee_structure_id']);
+    }
+    }

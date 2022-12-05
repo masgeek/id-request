@@ -5,18 +5,49 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_cohort_session".
+ * This is the base model class for table "smis.org_cohort_session".
  *
- * @property int $cohort_session_id
+ * @property integer $cohort_session_id
  * @property string $cohort_session_name
- * @property int $cohort_id
- * @property int $prog_curriculum_semester_id
+ * @property integer $cohort_id
+ * @property integer $prog_curriculum_semester_id
  * @property string $status
+ *
+ * @property \app\models\OrgCohort $cohort
+ * @property \app\models\OrgProgCurrSemester $progCurriculumSemester
  */
 class OrgCohortSession extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'cohort',
+            'progCurriculumSemester'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['cohort_session_name', 'cohort_id', 'prog_curriculum_semester_id'], 'required'],
+            [['cohort_id', 'prog_curriculum_semester_id'], 'integer'],
+            [['cohort_session_name'], 'string', 'max' => 50],
+            [['status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,23 +55,7 @@ class OrgCohortSession extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['cohort_session_name', 'cohort_id', 'prog_curriculum_semester_id'], 'required'],
-            [['cohort_id', 'prog_curriculum_semester_id'], 'default', 'value' => null],
-            [['cohort_id', 'prog_curriculum_semester_id'], 'integer'],
-            [['cohort_session_name'], 'string', 'max' => 50],
-            [['status'], 'string', 'max' => 10],
-            [['cohort_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgCohort::class, 'targetAttribute' => ['cohort_id' => 'cohort_id']],
-            [['prog_curriculum_semester_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgCurrSemester::class, 'targetAttribute' => ['prog_curriculum_semester_id' => 'prog_curriculum_semester_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -52,4 +67,20 @@ class OrgCohortSession extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCohort()
+    {
+        return $this->hasOne(\app\models\OrgCohort::className(), ['cohort_id' => 'cohort_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurriculumSemester()
+    {
+        return $this->hasOne(\app\models\OrgProgCurrSemester::className(), ['prog_curriculum_semester_id' => 'prog_curriculum_semester_id']);
+    }
+    }

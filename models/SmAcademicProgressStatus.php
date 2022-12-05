@@ -5,15 +5,43 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_academic_progress_status".
+ * This is the base model class for table "smis.sm_academic_progress_status".
  *
- * @property int $progress_status_id
+ * @property integer $progress_status_id
  * @property string $progress_status_name
+ *
+ * @property \app\models\SmAcademicProgress[] $smAcademicProgresses
  */
 class SmAcademicProgressStatus extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smAcademicProgresses'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['progress_status_id', 'progress_status_name'], 'required'],
+            [['progress_status_id'], 'integer'],
+            [['progress_status_name'], 'string', 'max' => 150]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,21 +49,7 @@ class SmAcademicProgressStatus extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['progress_status_id', 'progress_status_name'], 'required'],
-            [['progress_status_id'], 'default', 'value' => null],
-            [['progress_status_id'], 'integer'],
-            [['progress_status_name'], 'string', 'max' => 150],
-            [['progress_status_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +58,12 @@ class SmAcademicProgressStatus extends \yii\db\ActiveRecord
             'progress_status_name' => 'Progress Status Name',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmAcademicProgresses()
+    {
+        return $this->hasMany(\app\models\SmAcademicProgress::className(), ['progress_status_id' => 'progress_status_id']);
+    }
+    }

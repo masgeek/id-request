@@ -5,15 +5,43 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_id_request_type".
+ * This is the base model class for table "smis.sm_id_request_type".
  *
- * @property int $request_type_id
- * @property string|null $id_type_desc
+ * @property integer $request_type_id
+ * @property string $id_type_desc
+ *
+ * @property \app\models\SmStudentIdRequest[] $smStudentIdRequests
  */
 class SmIdRequestType extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smStudentIdRequests'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['request_type_id'], 'required'],
+            [['request_type_id'], 'integer'],
+            [['id_type_desc'], 'string', 'max' => 30]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,21 +49,7 @@ class SmIdRequestType extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['request_type_id'], 'required'],
-            [['request_type_id'], 'default', 'value' => null],
-            [['request_type_id'], 'integer'],
-            [['id_type_desc'], 'string', 'max' => 30],
-            [['request_type_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +58,12 @@ class SmIdRequestType extends \yii\db\ActiveRecord
             'id_type_desc' => 'Id Type Desc',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentIdRequests()
+    {
+        return $this->hasMany(\app\models\SmStudentIdRequest::className(), ['request_type_id' => 'request_type_id']);
+    }
+    }

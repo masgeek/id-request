@@ -5,16 +5,41 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_prog_curr_status".
+ * This is the base model class for table "smis.sm_student_prog_curr_status".
  *
- * @property int $student_prog_curr_stat_id
- * @property int $student_programme_curriculum_id
- * @property int $student_status_id
+ * @property integer $student_prog_curr_stat_id
+ * @property integer $student_programme_curriculum_id
+ * @property integer $student_status_id
  */
 class SmStudentProgCurrStatus extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['student_prog_curr_stat_id', 'student_programme_curriculum_id', 'student_status_id'], 'required'],
+            [['student_prog_curr_stat_id', 'student_programme_curriculum_id', 'student_status_id'], 'integer']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,20 +47,7 @@ class SmStudentProgCurrStatus extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['student_prog_curr_stat_id', 'student_programme_curriculum_id', 'student_status_id'], 'required'],
-            [['student_prog_curr_stat_id', 'student_programme_curriculum_id', 'student_status_id'], 'default', 'value' => null],
-            [['student_prog_curr_stat_id', 'student_programme_curriculum_id', 'student_status_id'], 'integer'],
-            [['student_prog_curr_stat_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

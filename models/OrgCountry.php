@@ -5,19 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_country".
+ * This is the base model class for table "smis.org_country".
  *
  * @property string $country_code
  * @property string $country_name
- * @property string|null $continent
- * @property string|null $region
+ * @property string $continent
+ * @property string $region
  * @property string $code2
- * @property string|null $nationality
+ * @property string $nationality
+ *
+ * @property \app\models\SmStudent[] $smStudents
  */
 class OrgCountry extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smStudents'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['country_code', 'country_name', 'code2'], 'required'],
+            [['country_code', 'code2'], 'string', 'max' => 5],
+            [['country_name', 'continent', 'region', 'nationality'], 'string', 'max' => 100]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,20 +53,7 @@ class OrgCountry extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['country_code', 'country_name', 'code2'], 'required'],
-            [['country_code', 'code2'], 'string', 'max' => 5],
-            [['country_name', 'continent', 'region', 'nationality'], 'string', 'max' => 100],
-            [['country_code'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -51,4 +66,12 @@ class OrgCountry extends \yii\db\ActiveRecord
             'nationality' => 'Nationality',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudents()
+    {
+        return $this->hasMany(\app\models\SmStudent::className(), ['country_code' => 'country_code']);
+    }
+    }

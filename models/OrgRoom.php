@@ -5,21 +5,48 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_rooms".
+ * This is the base model class for table "smis.org_rooms".
  *
- * @property int $room_id
- * @property string|null $room_code
- * @property string|null $room_name
- * @property int|null $fk_building_id
- * @property int|null $fk_floor_id
- * @property int|null $room_capacity
- * @property int|null $fk_room_type
- * @property int|null $fk_room_status_id
+ * @property integer $room_id
+ * @property string $room_code
+ * @property string $room_name
+ * @property integer $fk_building_id
+ * @property integer $fk_floor_id
+ * @property integer $room_capacity
+ * @property integer $fk_room_type
+ * @property integer $fk_room_status_id
  */
 class OrgRoom extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['room_id'], 'required'],
+            [['room_id', 'fk_building_id', 'fk_floor_id', 'room_capacity', 'fk_room_type', 'fk_room_status_id'], 'integer'],
+            [['room_code'], 'string', 'max' => 40],
+            [['room_name'], 'string', 'max' => 80]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -27,22 +54,7 @@ class OrgRoom extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['room_id'], 'required'],
-            [['room_id', 'fk_building_id', 'fk_floor_id', 'room_capacity', 'fk_room_type', 'fk_room_status_id'], 'default', 'value' => null],
-            [['room_id', 'fk_building_id', 'fk_floor_id', 'room_capacity', 'fk_room_type', 'fk_room_status_id'], 'integer'],
-            [['room_code'], 'string', 'max' => 40],
-            [['room_name'], 'string', 'max' => 80],
-            [['room_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

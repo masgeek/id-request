@@ -5,17 +5,46 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_approver".
+ * This is the base model class for table "smis.sm_approver".
  *
- * @property int $approver_id
+ * @property integer $approver_id
  * @property string $approver
- * @property int $level
+ * @property integer $level
  * @property string $status
+ *
+ * @property \app\models\SmWithdrawalApproval[] $smWithdrawalApprovals
  */
 class SmApprover extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smWithdrawalApprovals'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['approver', 'level', 'status'], 'required'],
+            [['level'], 'integer'],
+            [['status'], 'string'],
+            [['approver'], 'string', 'max' => 50]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,21 +52,7 @@ class SmApprover extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['approver', 'level', 'status'], 'required'],
-            [['level'], 'default', 'value' => null],
-            [['level'], 'integer'],
-            [['status'], 'string'],
-            [['approver'], 'string', 'max' => 50],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -48,4 +63,12 @@ class SmApprover extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmWithdrawalApprovals()
+    {
+        return $this->hasMany(\app\models\SmWithdrawalApproval::className(), ['approver_id' => 'approver_id']);
+    }
+    }

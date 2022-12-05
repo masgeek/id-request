@@ -5,20 +5,70 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_programme_curriculum".
+ * This is the base model class for table "smis.sm_student_programme_curriculum".
  *
- * @property int $student_prog_curriculum_id
- * @property int $student_id
+ * @property integer $student_prog_curriculum_id
+ * @property integer $student_id
  * @property string $registration_number
- * @property int $prog_curriculum_id
- * @property int $student_category_id
- * @property int $adm_refno
- * @property int $status_id
+ * @property integer $prog_curriculum_id
+ * @property integer $student_category_id
+ * @property integer $adm_refno
+ * @property integer $status_id
+ *
+ * @property \app\models\SmAcademicProgress[] $smAcademicProgresses
+ * @property \app\models\SmInterfacultyTransfer[] $smInterfacultyTransfers
+ * @property \app\models\SmSmStudentFeeStructure[] $smSmStudentFeeStructures
+ * @property \app\models\SmStudentCluster[] $smStudentClusters
+ * @property \app\models\SmStudentId[] $smStudents
+ * @property \app\models\SmStudentIdRequest[] $smStudentIdRequests
+ * @property \app\models\OrgProgrammeCurriculum $progCurriculum
+ * @property \app\models\SmAdmittedStudent $admRefno
+ * @property \app\models\SmStudent $student
+ * @property \app\models\SmStudentCategory $studentCategory
+ * @property \app\models\SmStudentStatus $status
+ * @property \app\models\SmStudentRelation[] $smStudentRelations
  */
 class SmStudentProgrammeCurriculum extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smAcademicProgresses',
+            'smInterfacultyTransfers',
+            'smSmStudentFeeStructures',
+            'smStudentClusters',
+            'smStudents',
+            'smStudentIdRequests',
+            'progCurriculum',
+            'admRefno',
+            'student',
+            'studentCategory',
+            'status',
+            'smStudentRelations'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['student_id', 'registration_number', 'prog_curriculum_id', 'student_category_id', 'adm_refno', 'status_id'], 'required'],
+            [['student_id', 'prog_curriculum_id', 'student_category_id', 'adm_refno', 'status_id'], 'integer'],
+            [['registration_number'], 'string', 'max' => 20]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -26,25 +76,7 @@ class SmStudentProgrammeCurriculum extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['student_id', 'registration_number', 'prog_curriculum_id', 'student_category_id', 'adm_refno', 'status_id'], 'required'],
-            [['student_id', 'prog_curriculum_id', 'student_category_id', 'adm_refno', 'status_id'], 'default', 'value' => null],
-            [['student_id', 'prog_curriculum_id', 'student_category_id', 'adm_refno', 'status_id'], 'integer'],
-            [['registration_number'], 'string', 'max' => 20],
-            [['prog_curriculum_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgrammeCurriculum::class, 'targetAttribute' => ['prog_curriculum_id' => 'prog_curriculum_id']],
-            [['adm_refno'], 'exist', 'skipOnError' => true, 'targetClass' => SmAdmittedStudent::class, 'targetAttribute' => ['adm_refno' => 'adm_refno']],
-            [['student_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudent::class, 'targetAttribute' => ['student_id' => 'student_id']],
-            [['student_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentCategory::class, 'targetAttribute' => ['student_category_id' => 'std_category_id']],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentStatus::class, 'targetAttribute' => ['status_id' => 'status_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -58,4 +90,100 @@ class SmStudentProgrammeCurriculum extends \yii\db\ActiveRecord
             'status_id' => 'Status ID',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmAcademicProgresses()
+    {
+        return $this->hasMany(\app\models\SmAcademicProgress::className(), ['student_prog_curriculum_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmInterfacultyTransfers()
+    {
+        return $this->hasMany(\app\models\SmInterfacultyTransfer::className(), ['student_prog_curriculum_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmSmStudentFeeStructures()
+    {
+        return $this->hasMany(\app\models\SmSmStudentFeeStructure::className(), ['student_prog_curr_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentClusters()
+    {
+        return $this->hasMany(\app\models\SmStudentCluster::className(), ['stud_prog_curr_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudents()
+    {
+        return $this->hasMany(\app\models\SmStudentId::className(), ['student_prog_curr_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentIdRequests()
+    {
+        return $this->hasMany(\app\models\SmStudentIdRequest::className(), ['student_prog_curr_id' => 'student_prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurriculum()
+    {
+        return $this->hasOne(\app\models\OrgProgrammeCurriculum::className(), ['prog_curriculum_id' => 'prog_curriculum_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdmRefno()
+    {
+        return $this->hasOne(\app\models\SmAdmittedStudent::className(), ['adm_refno' => 'adm_refno']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudent()
+    {
+        return $this->hasOne(\app\models\SmStudent::className(), ['student_id' => 'student_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentCategory()
+    {
+        return $this->hasOne(\app\models\SmStudentCategory::className(), ['std_category_id' => 'student_category_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStatus()
+    {
+        return $this->hasOne(\app\models\SmStudentStatus::className(), ['status_id' => 'status_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentRelations()
+    {
+        return $this->hasMany(\app\models\SmStudentRelation::className(), ['student_prog_curriculum_id' => 'student_prog_curriculum_id']);
+    }
+    }

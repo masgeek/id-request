@@ -5,15 +5,43 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_intake_source".
+ * This is the base model class for table "smis.sm_intake_source".
  *
- * @property int $source_id
+ * @property integer $source_id
  * @property string $source
+ *
+ * @property \app\models\SmAdmittedStudent[] $smAdmittedStudents
  */
 class SmIntakeSource extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smAdmittedStudents'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['source_id', 'source'], 'required'],
+            [['source_id'], 'integer'],
+            [['source'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -21,21 +49,7 @@ class SmIntakeSource extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['source_id', 'source'], 'required'],
-            [['source_id'], 'default', 'value' => null],
-            [['source_id'], 'integer'],
-            [['source'], 'string', 'max' => 15],
-            [['source_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +58,12 @@ class SmIntakeSource extends \yii\db\ActiveRecord
             'source' => 'Source',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmAdmittedStudents()
+    {
+        return $this->hasMany(\app\models\SmAdmittedStudent::className(), ['source_id' => 'source_id']);
+    }
+    }

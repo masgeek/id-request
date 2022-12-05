@@ -5,16 +5,42 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_mentor_relationship".
+ * This is the base model class for table "smis.sm_mentor_relationship".
  *
- * @property int $mentor_relationship_id
+ * @property integer $mentor_relationship_id
  * @property string $relationship_name
  * @property string $description
  */
 class SmMentorRelationship extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['mentor_relationship_id', 'relationship_name', 'description'], 'required'],
+            [['mentor_relationship_id'], 'integer'],
+            [['relationship_name', 'description'], 'string']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,21 +48,7 @@ class SmMentorRelationship extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['mentor_relationship_id', 'relationship_name', 'description'], 'required'],
-            [['mentor_relationship_id'], 'default', 'value' => null],
-            [['mentor_relationship_id'], 'integer'],
-            [['relationship_name', 'description'], 'string'],
-            [['mentor_relationship_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

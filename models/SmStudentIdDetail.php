@@ -5,18 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_id_details".
+ * This is the base model class for table "smis.sm_student_id_details".
  *
- * @property int $stud_id_det_id
- * @property int $student_id_serial_no
+ * @property integer $stud_id_det_id
+ * @property integer $student_id_serial_no
  * @property string $student_id_status
  * @property string $remarks
  * @property string $status_date
+ *
+ * @property \app\models\SmStudentId $studentIdSerialNo
  */
 class SmStudentIdDetail extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'studentIdSerialNo'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
+            [['stud_id_det_id', 'student_id_serial_no'], 'integer'],
+            [['student_id_status', 'remarks'], 'string'],
+            [['status_date'], 'safe']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,23 +53,7 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
-            [['stud_id_det_id', 'student_id_serial_no'], 'default', 'value' => null],
-            [['stud_id_det_id', 'student_id_serial_no'], 'integer'],
-            [['student_id_status', 'remarks'], 'string'],
-            [['status_date'], 'safe'],
-            [['stud_id_det_id'], 'unique'],
-            [['student_id_serial_no'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentId::class, 'targetAttribute' => ['student_id_serial_no' => 'student_id_serial_no']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -52,4 +65,12 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
             'status_date' => 'Status Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudentIdSerialNo()
+    {
+        return $this->hasOne(\app\models\SmStudentId::className(), ['student_id_serial_no' => 'student_id_serial_no']);
+    }
+    }

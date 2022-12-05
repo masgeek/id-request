@@ -5,17 +5,49 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_study_centre_group".
+ * This is the base model class for table "smis.org_study_centre_group".
  *
- * @property int $study_centre_group_id
- * @property int $study_centre_id
- * @property int $study_group_id
+ * @property integer $study_centre_group_id
+ * @property integer $study_centre_id
+ * @property integer $study_group_id
  * @property string $status
+ *
+ * @property \app\models\OrgProgCurrSemesterGroup[] $orgProgCurrSemesterGroups
+ * @property \app\models\OrgStudyCentre $studyCentre
+ * @property \app\models\OrgStudyGroup $studyGroup
  */
 class OrgStudyCentreGroup extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgProgCurrSemesterGroups',
+            'studyCentre',
+            'studyGroup'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['study_centre_id', 'study_group_id'], 'required'],
+            [['study_centre_id', 'study_group_id'], 'integer'],
+            [['status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,22 +55,7 @@ class OrgStudyCentreGroup extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['study_centre_id', 'study_group_id'], 'required'],
-            [['study_centre_id', 'study_group_id'], 'default', 'value' => null],
-            [['study_centre_id', 'study_group_id'], 'integer'],
-            [['status'], 'string', 'max' => 10],
-            [['study_centre_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgStudyCentre::class, 'targetAttribute' => ['study_centre_id' => 'study_centre_id']],
-            [['study_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgStudyGroup::class, 'targetAttribute' => ['study_group_id' => 'study_group_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -49,4 +66,28 @@ class OrgStudyCentreGroup extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgCurrSemesterGroups()
+    {
+        return $this->hasMany(\app\models\OrgProgCurrSemesterGroup::className(), ['study_centre_group_id' => 'study_centre_group_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudyCentre()
+    {
+        return $this->hasOne(\app\models\OrgStudyCentre::className(), ['study_centre_id' => 'study_centre_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStudyGroup()
+    {
+        return $this->hasOne(\app\models\OrgStudyGroup::className(), ['study_group_id' => 'study_group_id']);
+    }
+    }

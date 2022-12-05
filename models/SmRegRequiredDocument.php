@@ -5,16 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_reg_required_document".
+ * This is the base model class for table "smis.sm_reg_required_document".
  *
- * @property int $required_document_id
- * @property int $fk_document_id
- * @property int $fk_category_id
+ * @property integer $required_document_id
+ * @property integer $fk_document_id
+ * @property integer $fk_category_id
+ *
+ * @property \app\models\SmRegDocument $fkDocument
+ * @property \app\models\SmStudentCategory $fkCategory
+ * @property \app\models\SmStudSubmittedDocument[] $smStudSubmittedDocuments
  */
 class SmRegRequiredDocument extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'fkDocument',
+            'fkCategory',
+            'smStudSubmittedDocuments'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['fk_document_id', 'fk_category_id'], 'required'],
+            [['fk_document_id', 'fk_category_id'], 'integer']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,21 +53,7 @@ class SmRegRequiredDocument extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['fk_document_id', 'fk_category_id'], 'required'],
-            [['fk_document_id', 'fk_category_id'], 'default', 'value' => null],
-            [['fk_document_id', 'fk_category_id'], 'integer'],
-            [['fk_document_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmRegDocument::class, 'targetAttribute' => ['fk_document_id' => 'document_id']],
-            [['fk_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmStudentCategory::class, 'targetAttribute' => ['fk_category_id' => 'std_category_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -46,4 +63,28 @@ class SmRegRequiredDocument extends \yii\db\ActiveRecord
             'fk_category_id' => 'Fk Category ID',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFkDocument()
+    {
+        return $this->hasOne(\app\models\SmRegDocument::className(), ['document_id' => 'fk_document_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFkCategory()
+    {
+        return $this->hasOne(\app\models\SmStudentCategory::className(), ['std_category_id' => 'fk_category_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudSubmittedDocuments()
+    {
+        return $this->hasMany(\app\models\SmStudSubmittedDocument::className(), ['required_document_id' => 'required_document_id']);
+    }
+    }

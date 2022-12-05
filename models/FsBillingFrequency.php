@@ -5,16 +5,45 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.fs_billing_frequency".
+ * This is the base model class for table "smis.fs_billing_frequency".
  *
- * @property int $billing_frequency_id
+ * @property integer $billing_frequency_id
  * @property string $name
  * @property string $description
+ *
+ * @property \app\models\FsProgAdministrativeFeeStructure[] $fsProgAdministrativeFeeStructures
  */
 class FsBillingFrequency extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'fsProgAdministrativeFeeStructures'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['billing_frequency_id', 'name', 'description'], 'required'],
+            [['billing_frequency_id'], 'integer'],
+            [['name'], 'string', 'max' => 150],
+            [['description'], 'string', 'max' => 255]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,22 +51,7 @@ class FsBillingFrequency extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['billing_frequency_id', 'name', 'description'], 'required'],
-            [['billing_frequency_id'], 'default', 'value' => null],
-            [['billing_frequency_id'], 'integer'],
-            [['name'], 'string', 'max' => 150],
-            [['description'], 'string', 'max' => 255],
-            [['billing_frequency_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -47,4 +61,12 @@ class FsBillingFrequency extends \yii\db\ActiveRecord
             'description' => 'Description',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFsProgAdministrativeFeeStructures()
+    {
+        return $this->hasMany(\app\models\FsProgAdministrativeFeeStructure::className(), ['billing_frequency_id' => 'billing_frequency_id']);
+    }
+    }

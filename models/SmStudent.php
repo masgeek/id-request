@@ -5,41 +5,54 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student".
+ * This is the base model class for table "smis.sm_student".
  *
- * @property int $student_id
+ * @property integer $student_id
  * @property string $student_number
  * @property string $surname
  * @property string $other_names
  * @property string $gender
  * @property string $country_code
  * @property string $dob
- * @property string|null $id_no
- * @property string|null $passport_no
- * @property string|null $service_number
- * @property string|null $blood_group
- * @property int|null $sponsor
- * @property string|null $registration_date
+ * @property string $id_no
+ * @property string $passport_no
+ * @property string $service_number
+ * @property string $blood_group
+ * @property integer $sponsor
+ * @property string $registration_date
+ *
+ * @property \app\models\SmNameChange[] $smNameChanges
+ * @property \app\models\OrgCountry $countryCode
+ * @property \app\models\SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
+ * @property \app\models\SmWithdrawalRequest[] $smWithdrawalRequests
  */
 class SmStudent extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'smis.sm_student';
-    }
+    //use \mootensai\relation\RelationTrait;
+
 
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'smNameChanges',
+            'countryCode',
+            'smStudentProgrammeCurriculums',
+            'smWithdrawalRequests'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
      */
     public function rules()
     {
         return [
             [['student_number', 'surname', 'other_names', 'gender', 'country_code', 'dob'], 'required'],
             [['dob', 'registration_date'], 'safe'],
-            [['sponsor'], 'default', 'value' => null],
             [['sponsor'], 'integer'],
             [['student_number', 'passport_no', 'service_number'], 'string', 'max' => 20],
             [['surname'], 'string', 'max' => 50],
@@ -47,13 +60,20 @@ class SmStudent extends \yii\db\ActiveRecord
             [['gender'], 'string', 'max' => 1],
             [['country_code'], 'string', 'max' => 3],
             [['id_no'], 'string', 'max' => 10],
-            [['blood_group'], 'string', 'max' => 5],
-            [['country_code'], 'exist', 'skipOnError' => true, 'targetClass' => OrgCountry::class, 'targetAttribute' => ['country_code' => 'country_code']],
+            [['blood_group'], 'string', 'max' => 5]
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'smis.sm_student';
+    }
+
+    /**
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -73,4 +93,36 @@ class SmStudent extends \yii\db\ActiveRecord
             'registration_date' => 'Registration Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmNameChanges()
+    {
+        return $this->hasMany(\app\models\SmNameChange::className(), ['student_id' => 'student_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCountryCode()
+    {
+        return $this->hasOne(\app\models\OrgCountry::className(), ['country_code' => 'country_code']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmStudentProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\SmStudentProgrammeCurriculum::className(), ['student_id' => 'student_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSmWithdrawalRequests()
+    {
+        return $this->hasMany(\app\models\SmWithdrawalRequest::className(), ['student_id' => 'student_id']);
+    }
+    }

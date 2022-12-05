@@ -5,19 +5,50 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_name_change_approval".
+ * This is the base model class for table "smis.sm_name_change_approval".
  *
- * @property int $name_change_approval_id
- * @property int $name_change_id
- * @property string $approval_status pending, review, closed
- * @property string|null $remarks
+ * @property integer $name_change_approval_id
+ * @property integer $name_change_id
+ * @property string $approval_status
+ * @property string $remarks
  * @property string $approved_by
  * @property string $approval_date
+ *
+ * @property \app\models\SmNameChange $nameChange
  */
 class SmNameChangeApproval extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'nameChange'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['name_change_id', 'approval_status', 'approved_by', 'approval_date'], 'required'],
+            [['name_change_id'], 'integer'],
+            [['approval_date'], 'safe'],
+            [['approval_status'], 'string', 'max' => 30],
+            [['remarks'], 'string', 'max' => 250],
+            [['approved_by'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -25,24 +56,7 @@ class SmNameChangeApproval extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['name_change_id', 'approval_status', 'approved_by', 'approval_date'], 'required'],
-            [['name_change_id'], 'default', 'value' => null],
-            [['name_change_id'], 'integer'],
-            [['approval_date'], 'safe'],
-            [['approval_status'], 'string', 'max' => 30],
-            [['remarks'], 'string', 'max' => 250],
-            [['approved_by'], 'string', 'max' => 15],
-            [['name_change_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmNameChange::class, 'targetAttribute' => ['name_change_id' => 'name_change_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -55,4 +69,12 @@ class SmNameChangeApproval extends \yii\db\ActiveRecord
             'approval_date' => 'Approval Date',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNameChange()
+    {
+        return $this->hasOne(\app\models\SmNameChange::className(), ['name_change_id' => 'name_change_id']);
+    }
+    }

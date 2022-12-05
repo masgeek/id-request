@@ -5,25 +5,35 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.ex_grading_system".
+ * This is the base model class for table "smis.ex_grading_system".
  *
- * @property int $grading_system_id
+ * @property integer $grading_system_id
  * @property string $grading_system_name
  * @property string $grading_system_desc
  * @property string $status
+ *
+ * @property \app\models\ExGradingSystemDetail[] $exGradingSystemDetails
+ * @property \app\models\OrgProgrammeCurriculum[] $orgProgrammeCurriculums
  */
 class ExGradingSystem extends \yii\db\ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'smis.ex_grading_system';
-    }
+    //use \mootensai\relation\RelationTrait;
+
 
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'exGradingSystemDetails',
+            'orgProgrammeCurriculums'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
      */
     public function rules()
     {
@@ -31,12 +41,20 @@ class ExGradingSystem extends \yii\db\ActiveRecord
             [['grading_system_name', 'grading_system_desc'], 'required'],
             [['grading_system_name'], 'string', 'max' => 20],
             [['grading_system_desc'], 'string', 'max' => 60],
-            [['status'], 'string', 'max' => 10],
+            [['status'], 'string', 'max' => 10]
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'smis.ex_grading_system';
+    }
+
+    /**
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -47,4 +65,20 @@ class ExGradingSystem extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getExGradingSystemDetails()
+    {
+        return $this->hasMany(\app\models\ExGradingSystemDetail::className(), ['grading_system_id' => 'grading_system_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgProgrammeCurriculums()
+    {
+        return $this->hasMany(\app\models\OrgProgrammeCurriculum::className(), ['grading_system_id' => 'grading_system_id']);
+    }
+    }

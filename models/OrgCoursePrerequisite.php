@@ -5,17 +5,45 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_course_prerequisite".
+ * This is the base model class for table "smis.org_course_prerequisite".
  *
- * @property int $course_prerequisite_id
- * @property int $prog_curriculum_course_id
- * @property int $course_id
- * @property string|null $status
+ * @property integer $course_prerequisite_id
+ * @property integer $prog_curriculum_course_id
+ * @property integer $course_id
+ * @property string $status
+ *
+ * @property \app\models\OrgProgCurrCourse $progCurriculumCourse
  */
 class OrgCoursePrerequisite extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'progCurriculumCourse'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['prog_curriculum_course_id', 'course_id'], 'required'],
+            [['prog_curriculum_course_id', 'course_id'], 'integer'],
+            [['status'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,21 +51,7 @@ class OrgCoursePrerequisite extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['prog_curriculum_course_id', 'course_id'], 'required'],
-            [['prog_curriculum_course_id', 'course_id'], 'default', 'value' => null],
-            [['prog_curriculum_course_id', 'course_id'], 'integer'],
-            [['status'], 'string', 'max' => 15],
-            [['prog_curriculum_course_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgCurrCourse::class, 'targetAttribute' => ['prog_curriculum_course_id' => 'prog_curriculum_course_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -48,4 +62,12 @@ class OrgCoursePrerequisite extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProgCurriculumCourse()
+    {
+        return $this->hasOne(\app\models\OrgProgCurrCourse::className(), ['prog_curriculum_course_id' => 'prog_curriculum_course_id']);
+    }
+    }

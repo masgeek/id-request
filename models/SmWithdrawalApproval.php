@@ -5,18 +5,49 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_withdrawal_approval".
+ * This is the base model class for table "smis.sm_withdrawal_approval".
  *
- * @property int $withdrawal_approval_id
- * @property int $withdrawal_request_id
- * @property int $approver_id
- * @property string|null $comments
+ * @property integer $withdrawal_approval_id
+ * @property integer $withdrawal_request_id
+ * @property integer $approver_id
+ * @property string $comments
  * @property string $approval_status
+ *
+ * @property \app\models\SmApprover $approver
+ * @property \app\models\SmWithdrawalRequest $withdrawalRequest
  */
 class SmWithdrawalApproval extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'approver',
+            'withdrawalRequest'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['withdrawal_request_id', 'approver_id', 'approval_status'], 'required'],
+            [['withdrawal_request_id', 'approver_id'], 'integer'],
+            [['comments'], 'string'],
+            [['approval_status'], 'string', 'max' => 50]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -24,23 +55,7 @@ class SmWithdrawalApproval extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['withdrawal_request_id', 'approver_id', 'approval_status'], 'required'],
-            [['withdrawal_request_id', 'approver_id'], 'default', 'value' => null],
-            [['withdrawal_request_id', 'approver_id'], 'integer'],
-            [['comments'], 'string'],
-            [['approval_status'], 'string', 'max' => 50],
-            [['approver_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmApprover::class, 'targetAttribute' => ['approver_id' => 'approver_id']],
-            [['withdrawal_request_id'], 'exist', 'skipOnError' => true, 'targetClass' => SmWithdrawalRequest::class, 'targetAttribute' => ['withdrawal_request_id' => 'withdrawal_request_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -52,4 +67,20 @@ class SmWithdrawalApproval extends \yii\db\ActiveRecord
             'approval_status' => 'Approval Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApprover()
+    {
+        return $this->hasOne(\app\models\SmApprover::className(), ['approver_id' => 'approver_id']);
+    }
+        
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWithdrawalRequest()
+    {
+        return $this->hasOne(\app\models\SmWithdrawalRequest::className(), ['withdrawal_request_id' => 'withdrawal_request_id']);
+    }
+    }

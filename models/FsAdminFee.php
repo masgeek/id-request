@@ -5,17 +5,47 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.fs_admin_fees".
+ * This is the base model class for table "smis.fs_admin_fees".
  *
- * @property int $admin_fee_id
+ * @property integer $admin_fee_id
  * @property string $name
  * @property string $description
  * @property string $status
+ *
+ * @property \app\models\FsProgAdministrativeFeeStructure[] $fsProgAdministrativeFeeStructures
  */
 class FsAdminFee extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'fsProgAdministrativeFeeStructures'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['admin_fee_id', 'name', 'description', 'status'], 'required'],
+            [['admin_fee_id'], 'integer'],
+            [['name'], 'string', 'max' => 150],
+            [['description'], 'string', 'max' => 255],
+            [['status'], 'string', 'max' => 15]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -23,23 +53,7 @@ class FsAdminFee extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['admin_fee_id', 'name', 'description', 'status'], 'required'],
-            [['admin_fee_id'], 'default', 'value' => null],
-            [['admin_fee_id'], 'integer'],
-            [['name'], 'string', 'max' => 150],
-            [['description'], 'string', 'max' => 255],
-            [['status'], 'string', 'max' => 15],
-            [['admin_fee_id'], 'unique'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -50,4 +64,12 @@ class FsAdminFee extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFsProgAdministrativeFeeStructures()
+    {
+        return $this->hasMany(\app\models\FsProgAdministrativeFeeStructure::className(), ['admin_fee_id' => 'admin_fee_id']);
+    }
+    }

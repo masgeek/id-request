@@ -5,16 +5,44 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_study_centre".
+ * This is the base model class for table "smis.org_study_centre".
  *
- * @property int $study_centre_id
+ * @property integer $study_centre_id
  * @property string $study_centre_name
  * @property string $status
+ *
+ * @property \app\models\OrgStudyCentreGroup[] $orgStudyCentreGroups
  */
 class OrgStudyCentre extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'orgStudyCentreGroups'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['study_centre_name'], 'required'],
+            [['study_centre_name'], 'string', 'max' => 50],
+            [['status'], 'string', 'max' => 10]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,19 +50,7 @@ class OrgStudyCentre extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['study_centre_name'], 'required'],
-            [['study_centre_name'], 'string', 'max' => 50],
-            [['status'], 'string', 'max' => 10],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -44,4 +60,12 @@ class OrgStudyCentre extends \yii\db\ActiveRecord
             'status' => 'Status',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrgStudyCentreGroups()
+    {
+        return $this->hasMany(\app\models\OrgStudyCentreGroup::className(), ['study_centre_id' => 'study_centre_id']);
+    }
+    }

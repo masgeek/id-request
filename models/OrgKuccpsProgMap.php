@@ -5,25 +5,55 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.org_kuccps_prog_map".
+ * This is the base model class for table "smis.org_kuccps_prog_map".
  *
- * @property int $prog_map_id
+ * @property integer $prog_map_id
  * @property string $uon_prog_code
  * @property string $academic_year
- * @property string|null $kuccps_prog_code
- * @property int|null $cluster_id
- * @property int|null $capacity
- * @property float|null $cut_off_points
- * @property int|null $admitted
- * @property bool|null $faculty_submit_status faculty final submission status
- * @property bool|null $validity_status registrar final submit status
- * @property string|null $last_updated_date
- * @property string|null $last_updated_by
+ * @property string $kuccps_prog_code
+ * @property integer $cluster_id
+ * @property integer $capacity
+ * @property string $cut_off_points
+ * @property integer $admitted
+ * @property boolean $faculty_submit_status
+ * @property boolean $validity_status
+ * @property string $last_updated_date
+ * @property string $last_updated_by
  */
 class OrgKuccpsProgMap extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            ''
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['uon_prog_code', 'academic_year'], 'required'],
+            [['cluster_id', 'capacity', 'admitted'], 'integer'],
+            [['cut_off_points'], 'number'],
+            [['faculty_submit_status', 'validity_status'], 'boolean'],
+            [['last_updated_date'], 'safe'],
+            [['uon_prog_code', 'academic_year', 'kuccps_prog_code'], 'string', 'max' => 20],
+            [['last_updated_by'], 'string', 'max' => 30]
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -31,24 +61,7 @@ class OrgKuccpsProgMap extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['uon_prog_code', 'academic_year'], 'required'],
-            [['cluster_id', 'capacity', 'admitted'], 'default', 'value' => null],
-            [['cluster_id', 'capacity', 'admitted'], 'integer'],
-            [['cut_off_points'], 'number'],
-            [['faculty_submit_status', 'validity_status'], 'boolean'],
-            [['last_updated_date'], 'safe'],
-            [['uon_prog_code', 'academic_year', 'kuccps_prog_code'], 'string', 'max' => 20],
-            [['last_updated_by'], 'string', 'max' => 30],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {

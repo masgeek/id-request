@@ -5,16 +5,43 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "smis.sm_student_cohort_history".
+ * This is the base model class for table "smis.sm_student_cohort_history".
  *
- * @property int $stud_cohort_hist_id
- * @property int $stud_id
- * @property int $cohort_id
+ * @property integer $stud_cohort_hist_id
+ * @property integer $stud_id
+ * @property integer $cohort_id
+ *
+ * @property \app\models\OrgCohort $cohort
  */
 class SmStudentCohortHistory extends \yii\db\ActiveRecord
 {
+    //use \mootensai\relation\RelationTrait;
+
+
     /**
-     * {@inheritdoc}
+    * This function helps \mootensai\relation\RelationTrait runs faster
+    * @return array relation names of this model
+    */
+    /*public function relationNames()
+    {
+        return [
+            'cohort'
+        ];
+    }*/
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['stud_cohort_hist_id', 'stud_id', 'cohort_id'], 'required'],
+            [['stud_cohort_hist_id', 'stud_id', 'cohort_id'], 'integer']
+        ];
+    }
+
+    /**
+     * @inheritdoc
      */
     public static function tableName()
     {
@@ -22,21 +49,7 @@ class SmStudentCohortHistory extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['stud_cohort_hist_id', 'stud_id', 'cohort_id'], 'required'],
-            [['stud_cohort_hist_id', 'stud_id', 'cohort_id'], 'default', 'value' => null],
-            [['stud_cohort_hist_id', 'stud_id', 'cohort_id'], 'integer'],
-            [['stud_cohort_hist_id'], 'unique'],
-            [['cohort_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgCohort::class, 'targetAttribute' => ['cohort_id' => 'cohort_id']],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function attributeLabels()
     {
@@ -46,4 +59,12 @@ class SmStudentCohortHistory extends \yii\db\ActiveRecord
             'cohort_id' => 'Cohort ID',
         ];
     }
-}
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCohort()
+    {
+        return $this->hasOne(\app\models\OrgCohort::className(), ['cohort_id' => 'cohort_id']);
+    }
+    }
