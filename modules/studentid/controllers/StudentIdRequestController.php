@@ -2,13 +2,13 @@
 
 namespace app\modules\studentid\controllers;
 
-use Yii;
 use app\modules\studentid\models\StudentIdRequest;
 use app\modules\studentid\models\StudentIdRequestSearch;
+use Yii;
 use yii\db\StaleObjectException;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\Response;
 
 /**
@@ -22,7 +22,7 @@ class StudentIdRequestController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['post'],
                 ],
@@ -73,8 +73,12 @@ class StudentIdRequestController extends Controller
 
         $this->view->title = 'New student id request';
 
+        $model->request_date = date('Y-m-d');
+
+        $hasEnoughFunds = true; //@TODO tie in to fee balance checking
         return $this->render('create', [
             'model' => $model,
+            'hasEnoughFunds' => $hasEnoughFunds
         ]);
     }
 
@@ -83,6 +87,7 @@ class StudentIdRequestController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {

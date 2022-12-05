@@ -2,7 +2,7 @@
 
 use app\models\SmIdRequestStatus;
 use app\models\SmIdRequestType;
-use app\models\SmStudentProgrammeCurriculum;
+use app\modules\studentid\models\StudentProgrammeCurriculum;
 use kartik\form\ActiveForm;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
@@ -29,18 +29,16 @@ use yii\helpers\Html;
     ]); ?>
 
     <?= $form->field($model, 'student_prog_curr_id')->widget(Select2::class, [
-        'data' => ArrayHelper::map(SmStudentProgrammeCurriculum::find()->orderBy('student_prog_curriculum_id')->asArray()->all(), 'student_prog_curriculum_id', 'student_prog_curriculum_id'),
-        'options' => ['placeholder' => 'Choose Sm student programme curriculum'],
+        'data' => StudentProgrammeCurriculum::getCurriculum(),
+        'options' => ['placeholder' => 'Choose ' . strtolower($model->getAttributeLabel('student_prog_curr_id'))],
         'pluginOptions' => [
             'allowClear' => true
         ],
     ]); ?>
 
-    <?= $form->field($model, 'request_date')->textInput(['placeholder' => 'Request Date']) ?>
-
     <?= $form->field($model, 'status_id')->widget(Select2::class, [
-        'data' => ArrayHelper::map(SmIdRequestStatus::find()->orderBy('status_id')->asArray()->all(), 'status_id', 'status_id'),
-        'options' => ['placeholder' => 'Choose Sm id request status'],
+        'data' => ArrayHelper::map(SmIdRequestStatus::find()->orderBy('status_id')->asArray()->all(), 'status_id', 'status_name'),
+        'options' => ['placeholder' => 'Choose ' . strtolower($model->getAttributeLabel('status_id'))],
         'pluginOptions' => [
             'allowClear' => true
         ],
@@ -50,8 +48,14 @@ use yii\helpers\Html;
         'placeholder' => $model->getAttributeHint('source')
     ])->hint(false) ?>
 
+    <?= $form->field($model, 'request_date')->textInput([
+        'placeholder' => 'Request Date',
+        'readonly' => true
+    ]) ?>
+
+    
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Submit request' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
