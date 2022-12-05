@@ -19,6 +19,7 @@ class StudentProgrammeCurriculum extends \app\models\SmStudentProgrammeCurriculu
 //        $t = $h->progCurriculum->prog_curriculum_desc
         $data = self::find()
             ->joinWith('progCurriculum')
+            ->where(['student_id' => \Yii::$app->user->id])
             ->orderBy('student_prog_curriculum_id')
             ->asArray()
             ->all();
