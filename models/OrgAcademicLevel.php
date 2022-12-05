@@ -5,11 +5,13 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_academic_levels".
+ * This is the model class for table "smis.org_academic_levels".
  *
  * @property int $academic_level_id
- *
- * @property SmAcademicProgress[] $smAcademicProgresses
+ * @property int $academic_level
+ * @property string $academic_level_name
+ * @property int|null $academic_level_order
+ * @property string $status
  */
 class OrgAcademicLevel extends \yii\db\ActiveRecord
 {
@@ -18,7 +20,7 @@ class OrgAcademicLevel extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_academic_levels';
+        return 'smis.org_academic_levels';
     }
 
     /**
@@ -27,10 +29,11 @@ class OrgAcademicLevel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['academic_level_id'], 'required'],
-            [['academic_level_id'], 'default', 'value' => null],
-            [['academic_level_id'], 'integer'],
-            [['academic_level_id'], 'unique'],
+            [['academic_level', 'academic_level_name'], 'required'],
+            [['academic_level', 'academic_level_order'], 'default', 'value' => null],
+            [['academic_level', 'academic_level_order'], 'integer'],
+            [['academic_level_name'], 'string', 'max' => 20],
+            [['status'], 'string', 'max' => 10],
         ];
     }
 
@@ -41,16 +44,10 @@ class OrgAcademicLevel extends \yii\db\ActiveRecord
     {
         return [
             'academic_level_id' => 'Academic Level ID',
+            'academic_level' => 'Academic Level',
+            'academic_level_name' => 'Academic Level Name',
+            'academic_level_order' => 'Academic Level Order',
+            'status' => 'Status',
         ];
-    }
-
-    /**
-     * Gets query for [[SmAcademicProgresses]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmAcademicProgresses()
-    {
-        return $this->hasMany(SmAcademicProgress::class, ['academic_level_id' => 'academic_level_id']);
     }
 }

@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_student_id".
+ * This is the model class for table "smis.sm_student_id".
  *
  * @property int $student_id_serial_no
  * @property int $student_prog_curr_id
@@ -15,10 +15,6 @@ use Yii;
  * @property int $barcode
  * @property string|null $id_status
  * @property int|null $request_id
- *
- * @property SmStudentIdDetail[] $smStudentIdDetails
- * @property SmStudentIdStatus[] $smStudentIdStatuses
- * @property SmStudentProgrammeCurriculum $studentProgCurr
  */
 class SmStudentId extends \yii\db\ActiveRecord
 {
@@ -27,7 +23,7 @@ class SmStudentId extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_student_id';
+        return 'smis.sm_student_id';
     }
 
     /**
@@ -61,35 +57,5 @@ class SmStudentId extends \yii\db\ActiveRecord
             'id_status' => 'Id Status',
             'request_id' => 'Request ID',
         ];
-    }
-
-    /**
-     * Gets query for [[SmStudentIdDetails]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentIdDetails()
-    {
-        return $this->hasMany(SmStudentIdDetail::class, ['student_id_serial_no' => 'student_id_serial_no']);
-    }
-
-    /**
-     * Gets query for [[SmStudentIdStatuses]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentIdStatuses()
-    {
-        return $this->hasMany(SmStudentIdStatus::class, ['student_id_serial_no' => 'student_id_serial_no']);
-    }
-
-    /**
-     * Gets query for [[StudentProgCurr]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStudentProgCurr()
-    {
-        return $this->hasOne(SmStudentProgrammeCurriculum::class, ['student_prog_curriculum_id' => 'student_prog_curr_id']);
     }
 }

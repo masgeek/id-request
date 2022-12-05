@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_student_id_request".
+ * This is the model class for table "smis.sm_student_id_request".
  *
  * @property int $request_id
  * @property int $request_type_id
@@ -13,10 +13,6 @@ use Yii;
  * @property string $request_date
  * @property int $status_id
  * @property string $source
- *
- * @property SmIdRequestType $requestType
- * @property SmIdRequestStatus $status
- * @property SmStudentProgrammeCurriculum $studentProgCurr
  */
 class SmStudentIdRequest extends \yii\db\ActiveRecord
 {
@@ -25,7 +21,7 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_student_id_request';
+        return 'smis.sm_student_id_request';
     }
 
     /**
@@ -34,10 +30,8 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-//            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
-            [['request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
-//            [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'default', 'value' => null],
-            [['request_type_id', 'student_prog_curr_id', 'status_id'], 'default', 'value' => null],
+            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
+            [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'default', 'value' => null],
             [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'integer'],
             [['request_date'], 'safe'],
             [['source'], 'string', 'max' => 30],
@@ -61,35 +55,5 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
             'status_id' => 'Status ID',
             'source' => 'Source',
         ];
-    }
-
-    /**
-     * Gets query for [[RequestType]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRequestType()
-    {
-        return $this->hasOne(SmIdRequestType::class, ['request_type_id' => 'request_type_id']);
-    }
-
-    /**
-     * Gets query for [[Status]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStatus()
-    {
-        return $this->hasOne(SmIdRequestStatus::class, ['status_id' => 'status_id']);
-    }
-
-    /**
-     * Gets query for [[StudentProgCurr]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStudentProgCurr()
-    {
-        return $this->hasOne(SmStudentProgrammeCurriculum::class, ['student_prog_curriculum_id' => 'student_prog_curr_id']);
     }
 }

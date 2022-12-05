@@ -5,15 +5,13 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_prog_category".
+ * This is the model class for table "smis.org_prog_category".
  *
  * @property int $prog_cat_id
  * @property string $prog_cat_code
  * @property string $prog_cat_name
  * @property int $prog_cat_order
  * @property string $status
- *
- * @property OrgProgramme[] $orgProgrammes
  */
 class OrgProgCategory extends \yii\db\ActiveRecord
 {
@@ -22,7 +20,7 @@ class OrgProgCategory extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_prog_category';
+        return 'smis.org_prog_category';
     }
 
     /**
@@ -31,12 +29,11 @@ class OrgProgCategory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['prog_cat_id', 'prog_cat_code', 'prog_cat_name'], 'required'],
-            [['prog_cat_id', 'prog_cat_order'], 'default', 'value' => null],
-            [['prog_cat_id', 'prog_cat_order'], 'integer'],
+            [['prog_cat_code', 'prog_cat_name'], 'required'],
+            [['prog_cat_order'], 'default', 'value' => null],
+            [['prog_cat_order'], 'integer'],
             [['prog_cat_code', 'status'], 'string', 'max' => 20],
             [['prog_cat_name'], 'string', 'max' => 150],
-            [['prog_cat_id'], 'unique'],
         ];
     }
 
@@ -52,15 +49,5 @@ class OrgProgCategory extends \yii\db\ActiveRecord
             'prog_cat_order' => 'Prog Cat Order',
             'status' => 'Status',
         ];
-    }
-
-    /**
-     * Gets query for [[OrgProgrammes]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgProgrammes()
-    {
-        return $this->hasMany(OrgProgramme::class, ['prog_cat_id' => 'prog_cat_id']);
     }
 }

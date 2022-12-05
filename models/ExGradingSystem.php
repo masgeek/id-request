@@ -5,11 +5,12 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "ex_grading_system".
+ * This is the model class for table "smis.ex_grading_system".
  *
  * @property int $grading_system_id
- *
- * @property OrgProgrammeCurriculum[] $orgProgrammeCurriculums
+ * @property string $grading_system_name
+ * @property string $grading_system_desc
+ * @property string $status
  */
 class ExGradingSystem extends \yii\db\ActiveRecord
 {
@@ -18,7 +19,7 @@ class ExGradingSystem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'ex_grading_system';
+        return 'smis.ex_grading_system';
     }
 
     /**
@@ -27,10 +28,10 @@ class ExGradingSystem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['grading_system_id'], 'required'],
-            [['grading_system_id'], 'default', 'value' => null],
-            [['grading_system_id'], 'integer'],
-            [['grading_system_id'], 'unique'],
+            [['grading_system_name', 'grading_system_desc'], 'required'],
+            [['grading_system_name'], 'string', 'max' => 20],
+            [['grading_system_desc'], 'string', 'max' => 60],
+            [['status'], 'string', 'max' => 10],
         ];
     }
 
@@ -41,16 +42,9 @@ class ExGradingSystem extends \yii\db\ActiveRecord
     {
         return [
             'grading_system_id' => 'Grading System ID',
+            'grading_system_name' => 'Grading System Name',
+            'grading_system_desc' => 'Grading System Desc',
+            'status' => 'Status',
         ];
-    }
-
-    /**
-     * Gets query for [[OrgProgrammeCurriculums]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgProgrammeCurriculums()
-    {
-        return $this->hasMany(OrgProgrammeCurriculum::class, ['grading_system_id' => 'grading_system_id']);
     }
 }

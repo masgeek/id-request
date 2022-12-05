@@ -5,12 +5,14 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_country".
+ * This is the model class for table "smis.org_country".
  *
  * @property string $country_code
- * @property string|null $country_name
- *
- * @property SmStudent[] $smStudents
+ * @property string $country_name
+ * @property string|null $continent
+ * @property string|null $region
+ * @property string $code2
+ * @property string|null $nationality
  */
 class OrgCountry extends \yii\db\ActiveRecord
 {
@@ -19,7 +21,7 @@ class OrgCountry extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_country';
+        return 'smis.org_country';
     }
 
     /**
@@ -28,9 +30,9 @@ class OrgCountry extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['country_code'], 'required'],
-            [['country_code'], 'string', 'max' => 3],
-            [['country_name'], 'string', 'max' => 50],
+            [['country_code', 'country_name', 'code2'], 'required'],
+            [['country_code', 'code2'], 'string', 'max' => 5],
+            [['country_name', 'continent', 'region', 'nationality'], 'string', 'max' => 100],
             [['country_code'], 'unique'],
         ];
     }
@@ -43,16 +45,10 @@ class OrgCountry extends \yii\db\ActiveRecord
         return [
             'country_code' => 'Country Code',
             'country_name' => 'Country Name',
+            'continent' => 'Continent',
+            'region' => 'Region',
+            'code2' => 'Code2',
+            'nationality' => 'Nationality',
         ];
-    }
-
-    /**
-     * Gets query for [[SmStudents]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudents()
-    {
-        return $this->hasMany(SmStudent::class, ['country_code' => 'country_code']);
     }
 }

@@ -5,29 +5,24 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_programme_curriculum".
+ * This is the model class for table "smis.org_programme_curriculum".
  *
  * @property int $prog_curriculum_id
  * @property int $prog_id
  * @property string $prog_curriculum_desc
- * @property int $duration
+ * @property int $duration ACADEMIC SESSIONS
  * @property int $pass_mark
  * @property int $annual_semesters
  * @property int|null $max_units_per_semester
  * @property string|null $average_type
- * @property string|null $award_rounding
+ * @property string|null $award_rounding ROUNDOFF, TRUNCATE
  * @property string $start_date
  * @property string|null $end_date
- * @property string $prog_cur_prefix
+ * @property string $prog_cur_prefix Programme curriculum prefix
  * @property string $date_created
  * @property int $grading_system_id
  * @property string $status
  * @property string|null $approval_date
- *
- * @property ExGradingSystem $gradingSystem
- * @property OrgProgCurrUnit[] $orgProgCurrUnits
- * @property OrgProgramme $prog
- * @property SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
  */
 class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
 {
@@ -36,7 +31,7 @@ class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_programme_curriculum';
+        return 'smis.org_programme_curriculum';
     }
 
     /**
@@ -45,14 +40,13 @@ class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['prog_curriculum_id', 'prog_id', 'prog_curriculum_desc', 'duration', 'pass_mark', 'start_date', 'prog_cur_prefix', 'grading_system_id'], 'required'],
-            [['prog_curriculum_id', 'prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'default', 'value' => null],
-            [['prog_curriculum_id', 'prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'integer'],
+            [['prog_id', 'prog_curriculum_desc', 'duration', 'pass_mark', 'start_date', 'prog_cur_prefix', 'grading_system_id'], 'required'],
+            [['prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'default', 'value' => null],
+            [['prog_id', 'duration', 'pass_mark', 'annual_semesters', 'max_units_per_semester', 'grading_system_id'], 'integer'],
             [['start_date', 'end_date', 'date_created', 'approval_date'], 'safe'],
             [['prog_curriculum_desc'], 'string', 'max' => 300],
             [['average_type', 'prog_cur_prefix', 'status'], 'string', 'max' => 10],
             [['award_rounding'], 'string', 'max' => 20],
-            [['prog_curriculum_id'], 'unique'],
             [['grading_system_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExGradingSystem::class, 'targetAttribute' => ['grading_system_id' => 'grading_system_id']],
             [['prog_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrgProgramme::class, 'targetAttribute' => ['prog_id' => 'prog_id']],
         ];
@@ -67,59 +61,19 @@ class OrgProgrammeCurriculum extends \yii\db\ActiveRecord
             'prog_curriculum_id' => 'Prog Curriculum ID',
             'prog_id' => 'Prog ID',
             'prog_curriculum_desc' => 'Prog Curriculum Desc',
-            'duration' => 'Duration',
+            'duration' => 'ACADEMIC SESSIONS',
             'pass_mark' => 'Pass Mark',
             'annual_semesters' => 'Annual Semesters',
             'max_units_per_semester' => 'Max Units Per Semester',
             'average_type' => 'Average Type',
-            'award_rounding' => 'Award Rounding',
+            'award_rounding' => 'ROUNDOFF, TRUNCATE',
             'start_date' => 'Start Date',
             'end_date' => 'End Date',
-            'prog_cur_prefix' => 'Prog Cur Prefix',
+            'prog_cur_prefix' => 'Programme curriculum prefix',
             'date_created' => 'Date Created',
             'grading_system_id' => 'Grading System ID',
             'status' => 'Status',
             'approval_date' => 'Approval Date',
         ];
-    }
-
-    /**
-     * Gets query for [[GradingSystem]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getGradingSystem()
-    {
-        return $this->hasOne(ExGradingSystem::class, ['grading_system_id' => 'grading_system_id']);
-    }
-
-    /**
-     * Gets query for [[OrgProgCurrUnits]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgProgCurrUnits()
-    {
-        return $this->hasMany(OrgProgCurrUnit::class, ['prog_curriculum_id' => 'prog_curriculum_id']);
-    }
-
-    /**
-     * Gets query for [[Prog]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProg()
-    {
-        return $this->hasOne(OrgProgramme::class, ['prog_id' => 'prog_id']);
-    }
-
-    /**
-     * Gets query for [[SmStudentProgrammeCurriculums]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentProgrammeCurriculums()
-    {
-        return $this->hasMany(SmStudentProgrammeCurriculum::class, ['prog_curriculum_id' => 'prog_curriculum_id']);
     }
 }

@@ -5,15 +5,13 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_prog_type".
+ * This is the model class for table "smis.org_prog_type".
  *
  * @property int $prog_type_id
  * @property string $prog_type_code
  * @property string $prog_type_name
  * @property int $prog_type_order
  * @property string $status
- *
- * @property OrgProgramme[] $orgProgrammes
  */
 class OrgProgType extends \yii\db\ActiveRecord
 {
@@ -22,7 +20,7 @@ class OrgProgType extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_prog_type';
+        return 'smis.org_prog_type';
     }
 
     /**
@@ -31,13 +29,12 @@ class OrgProgType extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['prog_type_id', 'prog_type_code', 'prog_type_name', 'prog_type_order'], 'required'],
-            [['prog_type_id', 'prog_type_order'], 'default', 'value' => null],
-            [['prog_type_id', 'prog_type_order'], 'integer'],
+            [['prog_type_code', 'prog_type_name', 'prog_type_order'], 'required'],
+            [['prog_type_order'], 'default', 'value' => null],
+            [['prog_type_order'], 'integer'],
             [['prog_type_code'], 'string', 'max' => 15],
             [['prog_type_name'], 'string', 'max' => 150],
             [['status'], 'string', 'max' => 20],
-            [['prog_type_id'], 'unique'],
         ];
     }
 
@@ -53,15 +50,5 @@ class OrgProgType extends \yii\db\ActiveRecord
             'prog_type_order' => 'Prog Type Order',
             'status' => 'Status',
         ];
-    }
-
-    /**
-     * Gets query for [[OrgProgrammes]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgProgrammes()
-    {
-        return $this->hasMany(OrgProgramme::class, ['prog_type_id' => 'prog_type_id']);
     }
 }

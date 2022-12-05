@@ -5,12 +5,10 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_id_request_type".
+ * This is the model class for table "smis.sm_id_request_type".
  *
  * @property int $request_type_id
  * @property string|null $id_type_desc
- *
- * @property SmStudentIdRequest[] $smStudentIdRequests
  */
 class SmIdRequestType extends \yii\db\ActiveRecord
 {
@@ -19,7 +17,7 @@ class SmIdRequestType extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_id_request_type';
+        return 'smis.sm_id_request_type';
     }
 
     /**
@@ -45,15 +43,5 @@ class SmIdRequestType extends \yii\db\ActiveRecord
             'request_type_id' => 'Request Type ID',
             'id_type_desc' => 'Id Type Desc',
         ];
-    }
-
-    /**
-     * Gets query for [[SmStudentIdRequests]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentIdRequests()
-    {
-        return $this->hasMany(SmStudentIdRequest::class, ['request_type_id' => 'request_type_id']);
     }
 }

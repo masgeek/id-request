@@ -5,12 +5,11 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_student_status".
+ * This is the model class for table "smis.sm_student_status".
  *
  * @property int $status_id
- * @property string|null $status_name
- *
- * @property SmStudentProgrammeCurriculum[] $smStudentProgrammeCurriculums
+ * @property string $status
+ * @property bool $current_status
  */
 class SmStudentStatus extends \yii\db\ActiveRecord
 {
@@ -19,7 +18,7 @@ class SmStudentStatus extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_student_status';
+        return 'smis.sm_student_status';
     }
 
     /**
@@ -28,10 +27,11 @@ class SmStudentStatus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status_id'], 'required'],
+            [['status_id', 'status', 'current_status'], 'required'],
             [['status_id'], 'default', 'value' => null],
             [['status_id'], 'integer'],
-            [['status_name'], 'string', 'max' => 50],
+            [['current_status'], 'boolean'],
+            [['status'], 'string', 'max' => 12],
             [['status_id'], 'unique'],
         ];
     }
@@ -43,17 +43,8 @@ class SmStudentStatus extends \yii\db\ActiveRecord
     {
         return [
             'status_id' => 'Status ID',
-            'status_name' => 'Status Name',
+            'status' => 'Status',
+            'current_status' => 'Current Status',
         ];
-    }
-
-    /**
-     * Gets query for [[SmStudentProgrammeCurriculums]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentProgrammeCurriculums()
-    {
-        return $this->hasMany(SmStudentProgrammeCurriculum::class, ['status_id' => 'status_id']);
     }
 }

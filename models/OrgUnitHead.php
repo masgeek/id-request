@@ -5,11 +5,11 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "org_unit_head".
+ * This is the model class for table "smis.org_unit_head".
  *
  * @property int $unit_head_id
- *
- * @property OrgUnitHistory[] $orgUnitHistories
+ * @property string $unit_head_name PRINCIPAL,DIRECTOR,CHAIRMAN
+ * @property string $status
  */
 class OrgUnitHead extends \yii\db\ActiveRecord
 {
@@ -18,7 +18,7 @@ class OrgUnitHead extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'org_unit_head';
+        return 'smis.org_unit_head';
     }
 
     /**
@@ -27,10 +27,9 @@ class OrgUnitHead extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['unit_head_id'], 'required'],
-            [['unit_head_id'], 'default', 'value' => null],
-            [['unit_head_id'], 'integer'],
-            [['unit_head_id'], 'unique'],
+            [['unit_head_name'], 'required'],
+            [['unit_head_name'], 'string', 'max' => 50],
+            [['status'], 'string', 'max' => 10],
         ];
     }
 
@@ -41,16 +40,8 @@ class OrgUnitHead extends \yii\db\ActiveRecord
     {
         return [
             'unit_head_id' => 'Unit Head ID',
+            'unit_head_name' => 'PRINCIPAL,DIRECTOR,CHAIRMAN',
+            'status' => 'Status',
         ];
-    }
-
-    /**
-     * Gets query for [[OrgUnitHistories]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrgUnitHistories()
-    {
-        return $this->hasMany(OrgUnitHistory::class, ['unit_head_id' => 'unit_head_id']);
     }
 }

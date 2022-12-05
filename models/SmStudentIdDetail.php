@@ -5,15 +5,13 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_student_id_details".
+ * This is the model class for table "smis.sm_student_id_details".
  *
  * @property int $stud_id_det_id
  * @property int $student_id_serial_no
  * @property string $student_id_status
  * @property string $remarks
  * @property string $status_date
- *
- * @property SmStudentId $studentIdSerialNo
  */
 class SmStudentIdDetail extends \yii\db\ActiveRecord
 {
@@ -22,7 +20,7 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_student_id_details';
+        return 'smis.sm_student_id_details';
     }
 
     /**
@@ -31,9 +29,8 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-//            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
-            [['student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
-            [['student_id_serial_no'], 'default', 'value' => null],
+            [['stud_id_det_id', 'student_id_serial_no', 'student_id_status', 'remarks', 'status_date'], 'required'],
+            [['stud_id_det_id', 'student_id_serial_no'], 'default', 'value' => null],
             [['stud_id_det_id', 'student_id_serial_no'], 'integer'],
             [['student_id_status', 'remarks'], 'string'],
             [['status_date'], 'safe'],
@@ -54,15 +51,5 @@ class SmStudentIdDetail extends \yii\db\ActiveRecord
             'remarks' => 'Remarks',
             'status_date' => 'Status Date',
         ];
-    }
-
-    /**
-     * Gets query for [[StudentIdSerialNo]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStudentIdSerialNo()
-    {
-        return $this->hasOne(SmStudentId::class, ['student_id_serial_no' => 'student_id_serial_no']);
     }
 }

@@ -5,12 +5,10 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sm_id_request_status".
+ * This is the model class for table "smis.sm_id_request_status".
  *
  * @property int $status_id
  * @property string $status_name
- *
- * @property SmStudentIdRequest[] $smStudentIdRequests
  */
 class SmIdRequestStatus extends \yii\db\ActiveRecord
 {
@@ -19,7 +17,7 @@ class SmIdRequestStatus extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sm_id_request_status';
+        return 'smis.sm_id_request_status';
     }
 
     /**
@@ -45,15 +43,5 @@ class SmIdRequestStatus extends \yii\db\ActiveRecord
             'status_id' => 'Status ID',
             'status_name' => 'Status Name',
         ];
-    }
-
-    /**
-     * Gets query for [[SmStudentIdRequests]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSmStudentIdRequests()
-    {
-        return $this->hasMany(SmStudentIdRequest::class, ['status_id' => 'status_id']);
     }
 }
