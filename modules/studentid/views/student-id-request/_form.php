@@ -43,7 +43,7 @@ use yii\helpers\Html;
         <div class="row">
             <div class="col-md">
                 <?= $form->field($model, 'status_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(SmIdRequestStatus::find()->orderBy('status_id')->asArray()->all(), 'status_id', 'status_name'),
+                    'data' => \app\modules\studentid\models\IdRequestStatus::getPendingRequestStatus(),
                     'options' => ['placeholder' => 'Choose ' . strtolower($model->getAttributeLabel('status_id'))],
                     'pluginOptions' => [
                         'allowClear' => true
