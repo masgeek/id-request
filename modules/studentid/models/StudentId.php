@@ -9,6 +9,11 @@ namespace app\modules\studentid\models;
 class StudentId extends \app\models\SmStudentId
 {
 
+    const LOST = 'LOST';
+    const ACTIVE = 'ACTIVE';
+    const FOUND = 'FOUND';
+    const EXPIRED = 'EXPIRED';
+
     public $id_remarks;
 
 
@@ -20,10 +25,29 @@ class StudentId extends \app\models\SmStudentId
         return $rules;
     }
 
+    public function idStudentStatus(): array
+    {
+        return [
+            self::FOUND => self::ACTIVE,
+            self::LOST => self::LOST,
+        ];
+    }
+
+    public function idStatus(): array
+    {
+        return [
+            self::FOUND => self::ACTIVE,
+            self::LOST => self::LOST,
+            self::ACTIVE => self::ACTIVE,
+            self::EXPIRED => self::EXPIRED
+        ];
+    }
+
     /**
      * @return array|string[]
      */
-    public function attributeLabels(): array
+    public
+    function attributeLabels(): array
     {
         $labels = parent::attributeLabels();
         $labels['student_id_serial_no'] = 'Serial number';

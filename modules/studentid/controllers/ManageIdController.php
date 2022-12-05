@@ -9,6 +9,7 @@ use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * ManageIdController implements the CRUD actions for StudentId model.
@@ -42,42 +43,20 @@ class ManageIdController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single StudentId model.
-     * @param integer $id
-     * @return string
-     * @throws NotFoundHttpException
-     */
-    public function actionView(int $id): string
-    {
-        $model = $this->findModel($id);
-        $providerSmStudentIdDetails = new \yii\data\ArrayDataProvider([
-            'allModels' => $model->smStudentIdDetails,
-        ]);
-        $providerSmStudentIdStatus = new \yii\data\ArrayDataProvider([
-            'allModels' => $model->smStudentIdStatuses,
-        ]);
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-            'providerSmStudentIdDetails' => $providerSmStudentIdDetails,
-            'providerSmStudentIdStatus' => $providerSmStudentIdStatus,
-        ]);
-    }
-
-
 
     /**
      * Updates an existing StudentId model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * If update is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
-     * @return string|\yii\web\Response
+     * @return string|Response
      * @throws NotFoundHttpException
      */
-    public function actionUpdate(int $id)
+    public function actionUpdate(int $id): Response|string
     {
         $model = $this->findModel($id);
 
         if (Yii::$app->request->isPost) {
+            //extract specific fields to allow only updating of those values
             $post = Yii::$app->request->post('StudentId');
             $remarks = $post['id_remarks'];
             $status = $post['id_status'];
@@ -100,7 +79,7 @@ class ManageIdController extends Controller
                 return $this->redirect(['index']);
             }
         }
-        return $this->render('lost-id', [
+        return $this->render('update', [
             'model' => $model,
         ]);
 

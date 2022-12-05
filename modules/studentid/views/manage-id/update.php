@@ -5,16 +5,15 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\modules\studentid\models\StudentId */
 
-$this->title = 'Update Student Id: ' . ' ' . $model->student_id_serial_no;
+$this->title = 'Report ID: ' . $model->barcode . '  as lost';
 $this->params['breadcrumbs'][] = ['label' => 'Student Id', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->student_id_serial_no, 'url' => ['view', 'id' => $model->student_id_serial_no]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Report lost id';
 ?>
 <div class="student-id-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
+    <?= $this->render('_update-id-form', [
         'model' => $model,
     ]) ?>
 

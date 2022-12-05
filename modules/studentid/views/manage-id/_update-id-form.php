@@ -38,15 +38,15 @@ use yii\helpers\Html;
 
 
     <?= $form->field($model, 'id_status')->widget(Select2::class, [
-        'data' => [
-            'LOST' => 'LOST',
-            'ACTIVE' => 'ACTIVE',
+        'data' => $model->idStudentStatus(),
+        'options' => [
+            'placeholder' => 'Select id status',
         ],
-        'options' => ['placeholder' => 'Select id status'],
         'pluginOptions' => [
-            'allowClear' => true
+            'allowClear' => true,
         ],
     ]); ?>
+
 
     <?= $form->field($model, 'id_remarks')->textarea(['rows' => 5]) ?>
 
