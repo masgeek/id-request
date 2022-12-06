@@ -42,7 +42,8 @@ class SmStudentIdRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
+//            [['request_id', 'request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
+            [['request_type_id', 'student_prog_curr_id', 'request_date', 'status_id', 'source'], 'required'],
             [['request_id', 'request_type_id', 'student_prog_curr_id', 'status_id'], 'integer'],
             [['request_date'], 'safe'],
             [['source'], 'string', 'max' => 30]

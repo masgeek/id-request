@@ -130,8 +130,7 @@ class StudentIdRequestController extends Controller
     {
         if (($model = StudentIdRequest::findOne($id)) !== null) {
             return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
         }
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

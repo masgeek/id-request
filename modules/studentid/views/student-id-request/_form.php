@@ -1,6 +1,5 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-use app\models\SmIdRequestStatus;
 use app\models\SmIdRequestType;
 use app\modules\studentid\models\StudentProgrammeCurriculum;
 use kartik\form\ActiveForm;
@@ -39,33 +38,35 @@ use yii\helpers\Html;
                 ],
             ]); ?>
         </div>
-
-        <div class="row">
-            <div class="col-md">
-                <?= $form->field($model, 'status_id')->widget(Select2::class, [
-                    'data' => \app\modules\studentid\models\IdRequestStatus::getPendingRequestStatus(),
-                    'options' => ['placeholder' => 'Choose ' . strtolower($model->getAttributeLabel('status_id'))],
-                    'pluginOptions' => [
-                        'allowClear' => true
-                    ],
-                ]); ?>
-            </div>
-            <div class="col-md">
-                <?= $form->field($model, 'source')->textInput([
-                    'placeholder' => $model->getAttributeHint('source')
-                ])->hint(false) ?>
-            </div>
-        </div>
-        <?= $form->field($model, 'request_date')->textInput([
-            'placeholder' => 'Request Date',
-            'readonly' => true
-        ]) ?>
-
-
-        <div class="form-group">
-            <?= Html::submitButton($model->isNewRecord ? 'Submit request' : 'Update request', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-        </div>
-
-        <?php ActiveForm::end(); ?>
-
     </div>
+
+    <div class="row">
+        <div class="col-md">
+            <?= $form->field($model, 'status_id')->widget(Select2::class, [
+                'data' => \app\modules\studentid\models\IdRequestStatus::getPendingRequestStatus(),
+                'options' => ['placeholder' => 'Choose ' . strtolower($model->getAttributeLabel('status_id'))],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ]); ?>
+        </div>
+        <div class="col-md">
+            <?= $form->field($model, 'source')->textInput([
+                'placeholder' => $model->getAttributeHint('source')
+            ])->hint(false) ?>
+        </div>
+    </div>
+
+    <?= $form->field($model, 'request_date')->textInput([
+        'placeholder' => 'Request Date',
+        'readonly' => true
+    ]) ?>
+
+
+    <div class="form-group">
+        <?= Html::submitButton($model->isNewRecord ? 'Submit request' : 'Update request', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
+</div>
